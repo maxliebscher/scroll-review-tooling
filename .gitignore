@@ -1,0 +1,14 @@
+demo/out/
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.env
+data/
+*.ckpt
+*.pt
+*.pth
+*.safetensors
+*.npy
+*.tif
+*.ppm

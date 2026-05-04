@@ -1,0 +1,60 @@
+{
+  "review_protocol_version": "blind-review-v1",
+  "reviewer_alias": "",
+  "expertise_domain": "",
+  "reviewed_bundle_id": "public-demo-bundle",
+  "review_date_utc": "",
+  "required_acks": {
+    "blind_review_completed_before_reveal": false,
+    "no_ocr_or_transcription_attempted": false,
+    "no_letter_title_or_reading_claim_made": false,
+    "understands_this_is_internal_review_only": false
+  },
+  "blind_review_scores": [
+    {
+      "blind_id": "D01",
+      "review_file": "demo/images/D01.jpg",
+      "surface_quality_1_to_5": null,
+      "artifact_risk_1_to_5": null,
+      "structured_signal_confidence_0_to_5": null,
+      "textlike_confidence_0_to_5": null,
+      "would_prioritize_for_method_context_before_reveal": false,
+      "blind_notes_no_letters": ""
+    },
+    {
+      "blind_id": "D02",
+      "review_file": "demo/images/D02.jpg",
+      "surface_quality_1_to_5": null,
+      "artifact_risk_1_to_5": null,
+      "structured_signal_confidence_0_to_5": null,
+      "textlike_confidence_0_to_5": null,
+      "would_prioritize_for_method_context_before_reveal": false,
+      "blind_notes_no_letters": ""
+    },
+    {
+      "blind_id": "D03",
+      "review_file": "demo/images/D03.jpg",
+      "surface_quality_1_to_5": null,
+      "artifact_risk_1_to_5": null,
+      "structured_signal_confidence_0_to_5": null,
+      "textlike_confidence_0_to_5": null,
+      "would_prioritize_for_method_context_before_reveal": false,
+      "blind_notes_no_letters": ""
+    }
+  ],
+  "post_reveal_assessment": {
+    "reveal_opened_after_blind_scores_recorded": false,
+    "source_like_blind_ids_before_reveal": [],
+    "source_tiles_remain_plausible_after_method_context": null,
+    "control_tiles_explain_signal": null,
+    "final_verdict": "ambiguous",
+    "final_notes_no_letters": ""
+  },
+  "allowed_final_verdicts": [
+    "ambiguous",
+    "insufficient-material",
+    "reject-artifact-risk",
+    "supports-controlled-next-step"
+  ],
+  "claim_safety": "Template only; no OCR, no reading, no claim."
+}

@@ -1,0 +1,67 @@
+# Scroll Review Tooling
+
+A small, reproducible review-gate toolkit for blind-first candidate
+assessment. It validates reviewer responses, records second-check
+decisions, and emits attention signals only when a controlled next step
+is supported.
+
+This repository is intentionally data-free. It contains synthetic demo
+images and JSON only: no Scroll CT data, no private Discord exports, no
+model checkpoints, no model outputs, no OCR, and no reading or ink
+claim.
+
+## What It Does
+
+- Creates a blind review response template from a bundle manifest.
+- Validates reviewer responses against required acknowledgements and
+  score ranges.
+- Separates ambiguous review outcomes from controlled-next-step support.
+- Runs a release audit for private paths, secrets, raw data, model
+  weights, and oversized artifacts.
+
+## Sample Review Pack
+
+The included images are synthetic fixtures. They show the intended
+review format without carrying any real Scroll data.
+
+![Synthetic blind review sample pack](docs/figures/demo_contact_sheet.jpg)
+
+The workflow is deliberately conservative: a reviewer can support a
+controlled next step, but the tooling does not authorize transcription,
+OCR, a public claim, or a prize submission.
+
+![Review-gate workflow](docs/figures/review_gate_workflow.png)
+
+## Demo
+
+```bash
+python -m scroll_review_tooling.review_workflow init-template --bundle demo/bundle_manifest.json --out demo/inbox/response_template.json
+python -m scroll_review_tooling.review_workflow validate --template demo/inbox/response_template.json --inbox demo/inbox --out-json demo/out/review_status.json --out-tsv demo/out/review_status.tsv
+python -m scroll_review_tooling.review_workflow second-check --review-status demo/out/review_status.json --out-json demo/out/second_check.json
+python -m scroll_review_tooling.review_workflow attention --second-check demo/out/second_check.json --state demo/out/attention_state.json --out-json demo/out/attention.json
+python -m scroll_review_tooling.release_audit --root . --out-json demo/out/release_audit.json
+python -m unittest discover -s tests
+```
+
+Or run the same workflow with:
+
+```bash
+python scripts/run_demo.py
+```
+
+A supportive review creates an attention signal for a controlled next
+internal method step. It never authorizes OCR, transcription, or a
+public claim.
+
+## Release Status
+
+This is a review-tooling package, not a research result. Any real
+ScrollPrize candidate still needs independent expert review, provenance,
+scale, 3D position, reproducibility, and separate claim-safety approval.
+
+## Repository Scope
+
+This repository is suitable for private review of the tooling pattern.
+It is not the full research workspace and intentionally excludes raw
+data, private notes, Discord material, local caches, models, and
+generated candidate outputs.

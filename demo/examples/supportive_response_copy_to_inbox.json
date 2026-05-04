@@ -1,0 +1,53 @@
+{
+  "review_protocol_version": "blind-review-v1",
+  "reviewer_alias": "demo-reviewer",
+  "expertise_domain": "workflow-demo",
+  "reviewed_bundle_id": "public-demo-bundle",
+  "review_date_utc": "2026-05-04T21:30:46.236548+00:00",
+  "required_acks": {
+    "blind_review_completed_before_reveal": true,
+    "no_ocr_or_transcription_attempted": true,
+    "no_letter_title_or_reading_claim_made": true,
+    "understands_this_is_internal_review_only": true
+  },
+  "blind_review_scores": [
+    {
+      "blind_id": "D01",
+      "review_file": "demo/images/D01.jpg",
+      "surface_quality_1_to_5": 3,
+      "artifact_risk_1_to_5": 2,
+      "structured_signal_confidence_0_to_5": 1,
+      "textlike_confidence_0_to_5": 0,
+      "would_prioritize_for_method_context_before_reveal": true,
+      "blind_notes_no_letters": "Synthetic fixture only."
+    },
+    {
+      "blind_id": "D02",
+      "review_file": "demo/images/D02.jpg",
+      "surface_quality_1_to_5": 3,
+      "artifact_risk_1_to_5": 2,
+      "structured_signal_confidence_0_to_5": 1,
+      "textlike_confidence_0_to_5": 0,
+      "would_prioritize_for_method_context_before_reveal": true,
+      "blind_notes_no_letters": "Synthetic fixture only."
+    },
+    {
+      "blind_id": "D03",
+      "review_file": "demo/images/D03.jpg",
+      "surface_quality_1_to_5": 3,
+      "artifact_risk_1_to_5": 2,
+      "structured_signal_confidence_0_to_5": 1,
+      "textlike_confidence_0_to_5": 0,
+      "would_prioritize_for_method_context_before_reveal": true,
+      "blind_notes_no_letters": "Synthetic fixture only."
+    }
+  ],
+  "post_reveal_assessment": {
+    "reveal_opened_after_blind_scores_recorded": true,
+    "source_like_blind_ids_before_reveal": [],
+    "source_tiles_remain_plausible_after_method_context": true,
+    "control_tiles_explain_signal": false,
+    "final_verdict": "supports-controlled-next-step",
+    "final_notes_no_letters": "Demo response only."
+  }
+}

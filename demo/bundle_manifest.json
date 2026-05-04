@@ -1,0 +1,19 @@
+{
+  "bundle_id": "public-demo-bundle",
+  "created": "2026-05-04T21:30:46.234547+00:00",
+  "blind_sheets": [
+    {
+      "blind_id": "D01",
+      "path": "demo/images/D01.jpg"
+    },
+    {
+      "blind_id": "D02",
+      "path": "demo/images/D02.jpg"
+    },
+    {
+      "blind_id": "D03",
+      "path": "demo/images/D03.jpg"
+    }
+  ],
+  "claim_safety": "Synthetic fixture only; no OCR, no reading, no claim."
+}
