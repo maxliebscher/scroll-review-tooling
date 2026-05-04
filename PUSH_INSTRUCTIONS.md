@@ -20,4 +20,4 @@ python -m unittest discover -s tests
 python -m scroll_review_tooling.release_audit --root . --out-json demo/out/release_audit.json
 ```
 
-Do not include `demo/out/`, `__pycache__/`, `.pytest_cache/`, private Discord exports, raw CT data, model checkpoints, model outputs, secrets, or local absolute paths.
+Do not include `demo/out/`, `__pycache__/`, `.pytest_cache/`, private collaboration exports, CT data, model checkpoints, model outputs, secrets, or local absolute paths.

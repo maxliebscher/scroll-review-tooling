@@ -6,9 +6,9 @@ decisions, and emits attention signals only when a controlled next step
 is supported.
 
 This repository is intentionally data-free. It contains synthetic demo
-images and JSON only: no Scroll CT data, no private Discord exports, no
-model checkpoints, no model outputs, no OCR, and no reading or ink
-claim.
+images and JSON only. It does not include Scroll CT data, collaboration
+exports, model checkpoints, model outputs, OCR, transcriptions, or ink
+claims.
 
 ## What It Does
 
@@ -16,8 +16,8 @@ claim.
 - Validates reviewer responses against required acknowledgements and
   score ranges.
 - Separates ambiguous review outcomes from controlled-next-step support.
-- Runs a release audit for private paths, secrets, raw data, model
-  weights, and oversized artifacts.
+- Runs a release audit for repository scope, secrets, heavyweight
+  artifacts, and generated outputs.
 
 ## Sample Review Pack
 
@@ -31,6 +31,26 @@ controlled next step, but the tooling does not authorize transcription,
 OCR, a public claim, or a prize submission.
 
 ![Review-gate workflow](docs/figures/review_gate_workflow.png)
+
+## Why Synthetic Images?
+
+Real candidate thumbnails can be useful in a private research review,
+but they are not part of this tool package. Keeping the public-facing
+demo synthetic makes the repository easy to share, test, and audit
+without implying a reading, leaking collaboration context, or bundling
+data that belongs in a separate evidence package.
+
+If a team wants to review real candidate material, put those files in a
+separate private evidence bundle and run the same response-validation
+workflow against that bundle manifest.
+
+## Interface
+
+This release candidate is CLI-first. It does not include the internal
+Scroll Autopilot GUI used during local exploration. That GUI controls
+many project-specific pipelines and still contains internal workflow
+assumptions, so it should be scrubbed and redesigned separately before
+it is shared as a user-facing app.
 
 ## Demo
 
@@ -62,6 +82,6 @@ scale, 3D position, reproducibility, and separate claim-safety approval.
 ## Repository Scope
 
 This repository is suitable for private review of the tooling pattern.
-It is not the full research workspace and intentionally excludes raw
-data, private notes, Discord material, local caches, models, and
-generated candidate outputs.
+It is not the full research workspace and intentionally excludes
+research data, private notes, collaboration exports, local caches,
+models, and generated candidate outputs.
