@@ -23,9 +23,8 @@ python -m scroll_review_tooling.release_audit --root . --out-json demo/out/relea
 Do not include `demo/out/`, `__pycache__/`, `.pytest_cache/`, private collaboration exports, CT data, model checkpoints, model outputs, secrets, or local absolute paths.
 
 
-Private showcase note:
-This local repository includes `docs/private_examples/` and a
-`Private Real Output Examples` section in `README.md`. Keep the GitHub
-repository private while these files are present. Before making the
-repository public, remove that folder and section, then re-run the
-demo, tests, and release audit.
+Real example note:
+This repository includes `docs/examples/` with real generated review
+outputs. They are included so reviewers can see what the workflow
+produces. Keep the wording claim-safe: these are example artifacts, not
+OCR, not transcription, not a reading, and not a prize/public claim.

@@ -88,16 +88,8 @@ models, and generated candidate outputs.
 
 
 
-
-
-
-
-<!-- PRIVATE_REAL_EXAMPLES_START -->
-## Private Real Output Examples
-
-This section is for the private review repository only. Remove this
-section and `docs/private_examples/` before making the repository
-public.
+<!-- REAL_OUTPUT_EXAMPLES_START -->
+## Real Output Examples
 
 The images below are real local review artifacts from the candidate
 pipeline. They show what a human reviewer would inspect: blind CT
@@ -109,23 +101,21 @@ The overview flow uses cropped excerpts so that the content remains
 legible in GitHub's README view. The full review sheets are embedded
 underneath.
 
-![Private real-output review flow](docs/private_examples/real_private_review_flow.jpg)
+![Real-output review flow](docs/examples/real_review_output_flow.jpg)
 
 ### Blind-first CT Review
 
-![Blind control review pack](docs/private_examples/real_blind_control_review_pack.jpg)
+![Blind control review pack](docs/examples/real_blind_control_review_pack.jpg)
 
 ### Control/Model Reference
 
-![Control model reference](docs/private_examples/real_control_model_reference.jpg)
+![Control model reference](docs/examples/real_control_model_reference.jpg)
 
 ### Gate Decision Synthesis
 
-![Decision synthesis](docs/private_examples/real_decision_synthesis.jpg)
+![Decision synthesis](docs/examples/real_decision_synthesis.jpg)
 
 ### Preflight Render Context
 
-![Preflight render example](docs/private_examples/real_preflight_render_example.jpg)
-<!-- PRIVATE_REAL_EXAMPLES_END -->
-
-
+![Preflight render example](docs/examples/real_preflight_render_example.jpg)
+<!-- REAL_OUTPUT_EXAMPLES_END -->
