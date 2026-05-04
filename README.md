@@ -85,3 +85,28 @@ This repository is suitable for private review of the tooling pattern.
 It is not the full research workspace and intentionally excludes
 research data, private notes, collaboration exports, local caches,
 models, and generated candidate outputs.
+
+
+
+<!-- PRIVATE_REAL_EXAMPLES_START -->
+## Private Real Output Examples
+
+This section is for the private review repository only. Remove this
+section and `docs/private_examples/` before making the repository
+public.
+
+The images below are real local review artifacts from the candidate
+pipeline. They show what a human reviewer would inspect: blind CT
+sheets, control/model references, decision synthesis, and preflight
+render context. They are not OCR, not a transcription, not a reading,
+and not a public claim.
+
+![Private real-output review flow](docs/private_examples/real_private_review_flow.jpg)
+
+| Stage | Example |
+| --- | --- |
+| Blind-first CT review | ![Blind control review pack](docs/private_examples/real_blind_control_review_pack.jpg) |
+| Control/model reference | ![Control model reference](docs/private_examples/real_control_model_reference.jpg) |
+| Gate decision synthesis | ![Decision synthesis](docs/private_examples/real_decision_synthesis.jpg) |
+| Preflight render context | ![Preflight render example](docs/private_examples/real_preflight_render_example.jpg) |
+<!-- PRIVATE_REAL_EXAMPLES_END -->
