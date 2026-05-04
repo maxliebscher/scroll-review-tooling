@@ -88,6 +88,10 @@ models, and generated candidate outputs.
 
 
 
+
+
+
+
 <!-- PRIVATE_REAL_EXAMPLES_START -->
 ## Private Real Output Examples
 
@@ -101,12 +105,27 @@ sheets, control/model references, decision synthesis, and preflight
 render context. They are not OCR, not a transcription, not a reading,
 and not a public claim.
 
+The overview flow uses cropped excerpts so that the content remains
+legible in GitHub's README view. The full review sheets are embedded
+underneath.
+
 ![Private real-output review flow](docs/private_examples/real_private_review_flow.jpg)
 
-| Stage | Example |
-| --- | --- |
-| Blind-first CT review | ![Blind control review pack](docs/private_examples/real_blind_control_review_pack.jpg) |
-| Control/model reference | ![Control model reference](docs/private_examples/real_control_model_reference.jpg) |
-| Gate decision synthesis | ![Decision synthesis](docs/private_examples/real_decision_synthesis.jpg) |
-| Preflight render context | ![Preflight render example](docs/private_examples/real_preflight_render_example.jpg) |
+### Blind-first CT Review
+
+![Blind control review pack](docs/private_examples/real_blind_control_review_pack.jpg)
+
+### Control/Model Reference
+
+![Control model reference](docs/private_examples/real_control_model_reference.jpg)
+
+### Gate Decision Synthesis
+
+![Decision synthesis](docs/private_examples/real_decision_synthesis.jpg)
+
+### Preflight Render Context
+
+![Preflight render example](docs/private_examples/real_preflight_render_example.jpg)
 <!-- PRIVATE_REAL_EXAMPLES_END -->
+
+
