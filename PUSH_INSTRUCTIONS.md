@@ -28,3 +28,10 @@ This repository includes `docs/examples/` with real generated review
 outputs. They are included so reviewers can see what the workflow
 produces. Keep the wording claim-safe: these are example artifacts, not
 OCR, not transcription, not a reading, and not a prize/public claim.
+
+
+Real example note:
+This repository includes `docs/examples/` with real generated review
+outputs. They are included so reviewers can see what the workflow
+produces. Keep the wording claim-safe: these are example artifacts, not
+OCR, not transcription, not a reading, and not a prize/public claim.
