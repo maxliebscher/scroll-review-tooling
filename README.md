@@ -5,10 +5,11 @@ assessment. It validates reviewer responses, records second-check
 decisions, and emits attention signals only when a controlled next step
 is supported.
 
-This repository is intentionally data-free. It contains synthetic demo
-images and JSON only. It does not include Scroll CT data, collaboration
-exports, model checkpoints, model outputs, OCR, transcriptions, or ink
-claims.
+The runnable demo fixture is intentionally synthetic and data-free.
+A review repository may also include real example outputs under
+`docs/examples/` so reviewers can see the workflow in context. Those
+examples are illustrative artifacts only: no OCR, no transcription, no
+reading, and no public or prize claim.
 
 ## What It Does
 
@@ -34,15 +35,13 @@ OCR, a public claim, or a prize submission.
 
 ## Why Synthetic Images?
 
-Real candidate thumbnails can be useful in a private research review,
-but they are not part of this tool package. Keeping the public-facing
-demo synthetic makes the repository easy to share, test, and audit
-without implying a reading, leaking collaboration context, or bundling
-data that belongs in a separate evidence package.
+The synthetic demo is what makes the code path easy to test and audit.
+Real example outputs can be added separately under `docs/examples/`
+when the repository is being used for team review or public presentation.
 
-If a team wants to review real candidate material, put those files in a
-separate private evidence bundle and run the same response-validation
-workflow against that bundle manifest.
+If a team wants to review candidate material, keep the full evidence
+bundle separate and use this repository to validate the response and
+second-check workflow around that bundle.
 
 ## Interface
 
@@ -85,6 +84,8 @@ This repository is suitable for private review of the tooling pattern.
 It is not the full research workspace and intentionally excludes
 research data, private notes, collaboration exports, local caches,
 models, and generated candidate outputs.
+
+
 
 
 
