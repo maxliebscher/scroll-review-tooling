@@ -16,6 +16,7 @@ FORBIDDEN_PATH_PARTS = {
     "repos",
 }
 IGNORED_GENERATED_PATH_PARTS = {"__pycache__", ".pytest_cache", "demo/out", ".git"}
+IGNORED_GENERATED_PREFIXES = ("demo/out/", "sessions/")
 FORBIDDEN_SUFFIXES = {".ckpt", ".pt", ".pth", ".safetensors", ".npy", ".tif", ".ppm"}
 FORBIDDEN_TEXT_PATTERNS = [
     re.compile(r"C:\\Users\\", re.I),
@@ -43,6 +44,7 @@ REQUIRED_FILES = {
     "OPEN_LOCAL_OPERATOR.cmd",
     "RUN_LOCAL_DASHBOARD.cmd",
     "RUN_LOCAL_OPERATOR.cmd",
+    "START_REVIEW_SESSION.cmd",
     "CHANGELOG.md",
     "LICENSE",
     "SECURITY.md",
@@ -59,6 +61,7 @@ REQUIRED_FILES = {
     "scripts/check_release.py",
     "scripts/local_dashboard.py",
     "scripts/local_operator.py",
+    "scripts/start_session.py",
     "scroll_review_tooling/common.py",
     "scroll_review_tooling/manifest_validation.py",
     "scroll_review_tooling/operator_app.py",
@@ -94,7 +97,7 @@ def is_text(path: Path) -> bool:
 def is_ignored_generated(rel: str) -> bool:
     lower = rel.lower().replace("\\", "/")
     parts = set(lower.split("/"))
-    if "demo/out" in IGNORED_GENERATED_PATH_PARTS and lower.startswith("demo/out/"):
+    if any(lower.startswith(prefix) for prefix in IGNORED_GENERATED_PREFIXES):
         return True
     return any(part in parts for part in IGNORED_GENERATED_PATH_PARTS - {"demo/out"})
 

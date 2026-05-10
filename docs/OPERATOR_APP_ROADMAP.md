@@ -11,6 +11,8 @@ or submission generator.
 
 - Keep the CLI and JSON contracts as the stable core.
 - Add a local operator start page for first-run explanation and step guidance.
+- Add a local launcher path where users can drag JSON reviewer
+  responses only.
 - Keep generated HTML self-contained: no scripts, no external assets, no upload,
   no telemetry, and no network calls.
 - Allow local relative links between generated reports so non-experts can move
@@ -22,17 +24,20 @@ or submission generator.
 
 1. Start locally with `OPEN_LOCAL_OPERATOR.cmd`, `RUN_LOCAL_OPERATOR.cmd`, or
    `python scripts/local_operator.py`.
-2. Read the short operator explanation and click the local dashboard link.
-3. Confirm the synthetic session and release checks are ready.
-4. Open `demo/out/dashboard.html` for readiness, blockers, handoff, and priority.
-5. Share `demo/out/operator_summary.md` and the dashboard when reviewers need
+2. Optionally pass or drag in a local session manifest.
+3. Read the short operator explanation and click the local dashboard link.
+4. Confirm the synthetic session and release checks are ready.
+5. Open `demo/out/dashboard.html` for readiness, blockers, handoff, and priority.
+6. Share `demo/out/operator_summary.md` and the dashboard when reviewers need
    status and next-step context.
+7. Use `START_REVIEW_SESSION.cmd` when a reviewer needs a fresh local session
+   folder with isolated outputs.
 
 ## Future Work
 
-- Improve the operator start page with clearer blocked-state guidance.
 - Keep `OPEN_LOCAL_OPERATOR.cmd` as the noob path until a packaged app exists.
-- Add a local workspace selector that accepts only session manifests.
+- Improve the operator start page with richer blocked-state guidance.
+- Add a local workspace selector later, but only for session manifests.
 - Add a real one-window workflow later only after local-link navigation is
   stable and audited.
 - Expand the share summary into a richer reviewer handoff only after its

@@ -3,7 +3,7 @@ setlocal
 
 cd /d "%~dp0"
 
-call RUN_LOCAL_OPERATOR.cmd
+call RUN_LOCAL_OPERATOR.cmd %*
 if errorlevel 1 (
   exit /b 1
 )

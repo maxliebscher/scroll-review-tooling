@@ -8,6 +8,7 @@ model artifacts, and candidate-specific material outside this public repo.
 
 1. On Windows, double-click `OPEN_LOCAL_OPERATOR.cmd` to run the checks and
    open the generated operator page.
+   You can also drag a local session manifest onto `OPEN_LOCAL_OPERATOR.cmd`.
 2. Or run:
 
 ```bash
@@ -21,7 +22,13 @@ demo/out/operator.html
 ```
 
 Use `RUN_LOCAL_OPERATOR.cmd` instead of `OPEN_LOCAL_OPERATOR.cmd` when you want
-the command to print paths without opening a browser.
+the command to print paths without opening a browser. Both Windows launchers
+accept an optional session manifest path.
+
+For a fresh local review-session folder, double-click `START_REVIEW_SESSION.cmd`
+or drag JSON reviewer responses onto it. It writes an ignored `sessions/...`
+folder with review validation outputs and `session_summary.md`. It accepts JSON
+review responses only; it is not a raw-data importer.
 
 The operator page explains the local steps, safety boundary, current session,
 and where to find the detailed dashboard.
@@ -29,6 +36,9 @@ and where to find the detailed dashboard.
 It also writes `demo/out/operator_summary.md`. Share that short no-claim
 summary with a reviewer or maintainer when they need the status and next-step
 context without private evidence.
+
+If something is blocked, the operator page shows a "What Needs Attention"
+section with the state, plain-language meaning, and next local step.
 
 The page is static. It includes local links to generated reports, but changing
 inputs does not update the browser by itself. Rerun `RUN_LOCAL_OPERATOR.cmd` or

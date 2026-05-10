@@ -4,7 +4,12 @@ setlocal
 cd /d "%~dp0"
 
 echo Running local no-claim operator checks...
-python scripts\local_operator.py
+if "%~1"=="" (
+  python scripts\local_operator.py
+) else (
+  echo Using session manifest: %~1
+  python scripts\local_operator.py --session "%~1"
+)
 if errorlevel 1 (
   echo.
   echo Local operator is blocked. See demo\out\local_operator.json and demo\out\release_check.json for details.

@@ -35,6 +35,55 @@ def _relative_href(target: Path, base_file: Path) -> str:
     return Path(os.path.relpath(target, base_file.parent)).as_posix()
 
 
+def _operator_guidance(blockers: list[str], payload: dict[str, Any]) -> list[dict[str, str]]:
+    if not blockers:
+        return [
+            {
+                "state": "ready",
+                "what_it_means": "The synthetic session, release gate, dashboard, and share summary are ready.",
+                "next_local_step": "Open dashboard.html for detail, then share operator_summary.md when a reviewer or maintainer needs context.",
+            }
+        ]
+    guidance: list[dict[str, str]] = []
+    if "release-check" in blockers:
+        guidance.append(
+            {
+                "state": "release check blocked",
+                "what_it_means": f"The release gate reported {_display(payload.get('release_check_decision'))}.",
+                "next_local_step": "Open release_check.json, fix the failing check, then rerun RUN_LOCAL_OPERATOR.cmd.",
+            }
+        )
+    if "session" in blockers:
+        guidance.append(
+            {
+                "state": "session blocked",
+                "what_it_means": f"The session manifest reported {_display(payload.get('session_decision'))}.",
+                "next_local_step": "Use a local-review-session-v1 JSON file that references generated JSON summaries only.",
+            }
+        )
+    if "dashboard" in blockers:
+        guidance.append(
+            {
+                "state": "dashboard missing or blocked",
+                "what_it_means": f"The dashboard reported {_display(payload.get('dashboard_decision'))}.",
+                "next_local_step": "Rerun the operator launcher. If it still fails, inspect local_operator.json for the blocker list.",
+            }
+        )
+    return guidance
+
+
+def _headline(status_ok: bool, blockers: list[str]) -> str:
+    if status_ok:
+        return "Ready: open dashboard and share summary"
+    if "release-check" in blockers:
+        return "Blocked: release check needs attention"
+    if "session" in blockers:
+        return "Blocked: session manifest needs repair"
+    if "dashboard" in blockers:
+        return "Blocked: dashboard was not generated"
+    return "Blocked: inspect local operator status"
+
+
 def render_operator_app(
     *,
     out_html: Path,
@@ -76,6 +125,18 @@ def render_operator_app(
         operator_summary=_safe_relative(out_md, repo_root) if out_md else None,
         allowed_data_flow="session-json-only",
         local_only=True,
+    )
+    guidance = _operator_guidance(blockers, payload)
+    payload["operator_guidance"] = guidance
+    payload["operator_headline_status"] = _headline(status_ok, blockers)
+    payload["operator_can_continue"] = status_ok
+    payload["operator_next_step"] = guidance[0]["next_local_step"] if guidance else "Inspect local_operator.json."
+    payload["operator_next_command"] = "OPEN_LOCAL_OPERATOR.cmd" if status_ok else "RUN_LOCAL_OPERATOR.cmd"
+    payload["operator_detail_file"] = _safe_relative(out_json, repo_root)
+    payload["operator_shareable_outputs"] = (
+        [payload.get("operator_summary"), payload.get("dashboard_html"), payload.get("operator_detail_file"), "demo/out/release_check.json"]
+        if status_ok
+        else []
     )
     write_json(out_json, payload)
     out_html.parent.mkdir(parents=True, exist_ok=True)
@@ -147,6 +208,7 @@ def _operator_html(payload: dict[str, Any]) -> str:
         f'    <div class="card"><div class="label">Status OK</div><div class="value {status_class}">{_html(payload.get("status_ok"))}</div></div>',
         f'    <div class="card"><div class="label">Readiness</div><div class="value">{_html(payload.get("readiness_stage"))}</div></div>',
         f'    <div class="card"><div class="label">Session</div><div class="value">{_html(payload.get("session_name"))}</div></div>',
+        f'    <div class="card"><div class="label">Next Step</div><div class="value">{_html(payload.get("operator_headline_status"))}</div></div>',
         "  </section>",
         "  <h2>What To Do</h2>",
         "  <table>",
@@ -169,6 +231,21 @@ def _operator_html(payload: dict[str, Any]) -> str:
             f"      <tr><td>Dashboard file</td><td><code>{_html(payload.get('dashboard_html'))}</code></td></tr>",
             f"      <tr><td>Share summary</td><td><code>{_html(payload.get('operator_summary'))}</code></td></tr>",
             f"      <tr><td>Blockers</td><td><code>{_html(payload.get('readiness_blockers'))}</code></td></tr>",
+            "    </tbody>",
+            "  </table>",
+            "  <h2>What Needs Attention</h2>",
+            "  <table>",
+            "    <thead><tr><th>State</th><th>Meaning</th><th>Next local step</th></tr></thead>",
+            "    <tbody>",
+        ]
+    )
+    for row in payload.get("operator_guidance") or []:
+        if isinstance(row, dict):
+            lines.append(
+                f"      <tr><td>{_html(row.get('state'))}</td><td>{_html(row.get('what_it_means'))}</td><td>{_html(row.get('next_local_step'))}</td></tr>"
+            )
+    lines.extend(
+        [
             "    </tbody>",
             "  </table>",
             "  <h2>Who Gets What</h2>",
@@ -204,6 +281,21 @@ def _operator_markdown(payload: dict[str, Any]) -> str:
         f"- Claim status: `{payload.get('claim_status')}`",
         f"- Public claim allowed: `{payload.get('public_claim_allowed')}`",
         f"- Target inference allowed: `{payload.get('target_inference_allowed')}`",
+        f"- Headline status: `{payload.get('operator_headline_status')}`",
+        f"- Can continue: `{payload.get('operator_can_continue')}`",
+        f"- Next command: `{payload.get('operator_next_command')}`",
+        f"- Shareable outputs: `{_display(payload.get('operator_shareable_outputs'))}`",
+        "",
+        "## What Needs Attention",
+        "",
+    ]
+    for row in payload.get("operator_guidance") or []:
+        if isinstance(row, dict):
+            lines.append(
+                f"- `{row.get('state')}`: {row.get('what_it_means')} Next local step: {row.get('next_local_step')}"
+            )
+    lines.extend(
+        [
         "",
         "## Share Guidance",
         "",
@@ -212,5 +304,6 @@ def _operator_markdown(payload: dict[str, Any]) -> str:
         "- Public repo: share only synthetic fixtures, no-claim docs, and public-safe generated summaries.",
         "",
         "Do not share private evidence, raw scans, collaboration exports, model artifacts, candidate coordinates, OCR, transcription, reading attempts, or public/prize claims from this public package.",
-    ]
+        ]
+    )
     return "\n".join(lines) + "\n"

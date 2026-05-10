@@ -32,6 +32,7 @@ Then inspect:
 - `docs/OPERATOR_APP_ROADMAP.md`
 - `OPEN_LOCAL_OPERATOR.cmd`
 - `RUN_LOCAL_OPERATOR.cmd`
+- `START_REVIEW_SESSION.cmd`
 - `scripts/local_dashboard.py`
 - `scripts/local_operator.py`
 - `scroll_review_tooling/reports.py`
@@ -62,6 +63,8 @@ Then inspect:
 
 - Make `demo/out/operator.html` clearer when sessions are blocked.
 - Preserve `demo/out/operator_summary.md` as the short no-claim share handoff.
+- Keep `operator_guidance` current as blocked states become more specific.
+- Preserve `sessions/` as ignored generated local output.
 - Add a local workspace selector later, but only for session manifests.
 - Add output-folder summaries so non-experts know what to share and why.
 - Add screenshot-based review of the operator page before any public release.

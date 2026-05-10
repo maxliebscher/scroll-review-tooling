@@ -42,6 +42,24 @@ If you prefer a launcher that does not open a browser, use
 `demo/out/operator_summary.md`, a short no-claim share summary for reviewers or
 maintainers.
 
+You can pass a local session manifest to either Windows launcher, or drag a
+session manifest onto it:
+
+```text
+OPEN_LOCAL_OPERATOR.cmd demo\session_manifest.json
+```
+
+For a local review-session folder, use the session starter:
+
+```text
+START_REVIEW_SESSION.cmd
+```
+
+You may drag JSON reviewer responses onto it. The starter writes an ignored
+`sessions/...` folder with an inbox template, validation outputs, second-check
+status, attention status, and `session_summary.md`. It accepts JSON review
+responses only; it is not a raw-data importer.
+
 The current operator page is static. It has local links to generated reports,
 but it does not run checks from inside the browser. If a session file or JSON
 summary changes, rerun the command and refresh the page.
@@ -140,6 +158,18 @@ want the command to print paths without opening a browser.
 Open `demo/out/operator.html` first. It explains the current status and links
 to the generated dashboard, JSON summaries, and share summary. It is a static
 local page, not a browser app that runs checks itself.
+
+To use a different local session manifest:
+
+```bash
+python scripts/local_operator.py --session demo/session_manifest.json
+```
+
+To create an isolated local review-session folder:
+
+```bash
+python scripts/start_session.py --demo
+```
 
 For the lower-level dashboard flow:
 

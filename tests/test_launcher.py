@@ -21,6 +21,7 @@ class LauncherTests(unittest.TestCase):
         launcher = repo / "RUN_LOCAL_OPERATOR.cmd"
         text = launcher.read_text(encoding="utf-8")
         self.assertIn("python scripts\\local_operator.py", text)
+        self.assertIn('--session "%~1"', text)
         self.assertIn("demo\\out\\operator.html", text)
         self.assertIn("demo\\out\\dashboard.html", text)
         self.assertNotIn("http://", text.lower())
@@ -32,7 +33,7 @@ class LauncherTests(unittest.TestCase):
         repo = Path(__file__).resolve().parents[1]
         launcher = repo / "OPEN_LOCAL_OPERATOR.cmd"
         text = launcher.read_text(encoding="utf-8")
-        self.assertIn("call RUN_LOCAL_OPERATOR.cmd", text)
+        self.assertIn("call RUN_LOCAL_OPERATOR.cmd %*", text)
         self.assertIn('start "" "demo\\out\\operator.html"', text)
         self.assertNotIn("http://", text.lower())
         self.assertNotIn("https://", text.lower())

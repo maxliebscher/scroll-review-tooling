@@ -375,19 +375,45 @@ Use `scripts/local_operator.py` to generate the no-claim operator start page:
 
 ```bash
 python scripts/local_operator.py
+python scripts/local_operator.py --session demo/session_manifest.json
 ```
 
 On Windows, `RUN_LOCAL_OPERATOR.cmd` is the thin double-click wrapper. The
-command writes `demo/out/operator.html`, `demo/out/local_operator.json`, and the
-usual dashboard outputs. It also writes `demo/out/operator_summary.md` as a
-short no-claim share summary. The operator page is static: it links only to
-generated local files such as `dashboard.html`, `local_operator.json`,
-`operator_summary.md`, and `release_check.json`. It does not run checks from
-the browser.
+Windows launchers accept an optional session manifest path, so a user can drag
+a session manifest onto `OPEN_LOCAL_OPERATOR.cmd`. The command writes
+`demo/out/operator.html`, `demo/out/local_operator.json`, and the usual
+dashboard outputs. It also writes `demo/out/operator_summary.md` as a short
+no-claim share summary. The operator page is static: it links only to generated
+local files such as `dashboard.html`, `local_operator.json`,
+`operator_summary.md`, and `release_check.json`. It does not run checks from the
+browser.
 
 The JSON output uses `local-operator-app-v1` and keeps the standard no-claim
 fields: `status_ok`, `readiness_stage`, `readiness_blockers`, `claim_status`,
-`public_claim_allowed`, and `target_inference_allowed`.
+`public_claim_allowed`, and `target_inference_allowed`. It also includes
+`operator_guidance`, a short list of plain-language next local steps for ready
+or blocked states. For future UI shells it also includes
+`operator_headline_status`, `operator_can_continue`, `operator_next_step`,
+`operator_next_command`, and `operator_shareable_outputs`.
+
+## Local Review Session Output
+
+Use `scripts/start_session.py` to create an isolated local review-session
+folder:
+
+```bash
+python scripts/start_session.py --demo
+python scripts/start_session.py reviewer_response.json
+```
+
+On Windows, `START_REVIEW_SESSION.cmd` is the drag-and-drop wrapper. It copies
+only JSON reviewer responses into an ignored `sessions/.../inbox` folder, writes
+a response template, validates the inbox, runs second-check and attention
+summaries, and writes `session_summary.md`.
+
+The JSON output uses `local-review-session-run-v1` and remains no-claim. The
+session starter is not a raw-data importer and does not load images, models,
+OCR, transcription, inference, or public/prize claim workflows.
 
 ## Release Check Output
 
