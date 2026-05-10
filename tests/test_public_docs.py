@@ -14,6 +14,8 @@ class PublicDocsTests(unittest.TestCase):
         docs = [
             repo / "README.md",
             repo / "docs" / "LOCAL_OPERATOR_GUIDE.md",
+            repo / "docs" / "OPERATOR_APP_ROADMAP.md",
+            repo / "docs" / "CONTINUATION_GUIDE.md",
         ]
         forbidden = [
             "hosted mode",
@@ -26,6 +28,19 @@ class PublicDocsTests(unittest.TestCase):
             text = path.read_text(encoding="utf-8").lower()
             for phrase in forbidden:
                 self.assertNotIn(phrase, text)
+
+    def test_operator_docs_exist_and_keep_no_claim_contract(self) -> None:
+        repo = Path(__file__).resolve().parents[1]
+        for path in [
+            repo / "docs" / "OPERATOR_APP_ROADMAP.md",
+            repo / "docs" / "CONTINUATION_GUIDE.md",
+        ]:
+            text = path.read_text(encoding="utf-8").lower()
+            self.assertIn("no ocr", text)
+            self.assertIn("no", text)
+            self.assertIn("public", text)
+            self.assertIn("claim", text)
+            self.assertIn("local", text)
 
     def test_session_blocks_forbidden_suffixes_with_unusual_casing(self) -> None:
         repo = Path(__file__).resolve().parents[1]

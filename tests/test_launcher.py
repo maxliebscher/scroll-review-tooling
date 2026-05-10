@@ -16,6 +16,18 @@ class LauncherTests(unittest.TestCase):
         self.assertNotIn("start ", text.lower())
         self.assertNotIn("powershell", text.lower())
 
+    def test_windows_operator_launcher_is_thin_local_wrapper(self) -> None:
+        repo = Path(__file__).resolve().parents[1]
+        launcher = repo / "RUN_LOCAL_OPERATOR.cmd"
+        text = launcher.read_text(encoding="utf-8")
+        self.assertIn("python scripts\\local_operator.py", text)
+        self.assertIn("demo\\out\\operator.html", text)
+        self.assertIn("demo\\out\\dashboard.html", text)
+        self.assertNotIn("http://", text.lower())
+        self.assertNotIn("https://", text.lower())
+        self.assertNotIn("start ", text.lower())
+        self.assertNotIn("powershell", text.lower())
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -3,9 +3,11 @@
 Use this checklist before pushing or sharing a release candidate.
 
 - Run `git status --short --branch` and review every tracked and untracked path.
+- Run `python scripts/local_operator.py`.
 - Run `python scripts/local_dashboard.py`.
 - Run `python scripts/local_dashboard.py --session demo/session_manifest.json`.
 - Run `python -m scroll_review_tooling.review_workflow dashboard --session demo/session_manifest.json`.
+- Confirm `RUN_LOCAL_OPERATOR.cmd` only wraps `python scripts\local_operator.py` and does not open a browser or contact the network.
 - Confirm `RUN_LOCAL_DASHBOARD.cmd` only wraps `python scripts\local_dashboard.py` and does not open a browser or contact the network.
 - Run `python scripts/run_demo.py`.
 - Run `python scripts/check_release.py --out-json demo/out/release_check.json --out-md demo/out/release_check.md`.
@@ -18,8 +20,9 @@ Use this checklist before pushing or sharing a release candidate.
 - Confirm handoff outputs report `handoff-ready` only for no-claim synthetic demo inputs.
 - Confirm path-priority reports rank handoff-ready outputs ahead of blocked outputs.
 - Confirm `demo/out/dashboard.html` is generated locally, ignored, no-claim, and self-contained.
+- Confirm `demo/out/operator.html` is generated locally, ignored, no-claim, and self-contained.
 - Confirm `demo/session_manifest.json` is synthetic and references only generated JSON summaries.
-- Confirm the dashboard contains no external URLs, scripts, upload flow, or hosted mode.
+- Confirm the dashboard and operator page contain no external URLs, scripts, upload behavior, or remote app behavior.
 - Confirm the runnable demo path contains only synthetic demo data.
 - Confirm manifest protocol versions are present in the synthetic demo files:
   `review-pack-v1`, `surface-vc3d-review-v1`, and

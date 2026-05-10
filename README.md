@@ -17,7 +17,8 @@ examples are illustrative artifacts only: no OCR, no transcription, no
 reading, and no public or prize claim.
 
 Current release-candidate line: `v0.6.0`. See `CHANGELOG.md` for the public-safe
-change summary and `docs/LOCAL_OPERATOR_GUIDE.md` for the local dashboard flow.
+change summary, `docs/LOCAL_OPERATOR_GUIDE.md` for the local dashboard flow,
+and `docs/OPERATOR_APP_ROADMAP.md` for the noob-friendly local operator line.
 
 ## ELI5: How It Works
 
@@ -26,7 +27,17 @@ work. It does not look at a scroll and tell you what it says. Instead, it looks
 at small JSON summary files that already exist and asks: is this review package
 complete, controlled, safe to discuss, and ready for the next private step?
 
-A new user usually starts with one command:
+A new user can start with the local operator page:
+
+```bash
+python scripts/local_operator.py
+```
+
+On Windows, double-click `RUN_LOCAL_OPERATOR.cmd`. It writes
+`demo/out/operator.html`, a plain-language start page, and
+`demo/out/dashboard.html`, the detailed status board.
+
+The lower-level dashboard command remains available:
 
 ```bash
 python scripts/local_dashboard.py
@@ -67,6 +78,8 @@ elsewhere.
   evaluation, high-resolution rescan priority, or private review.
 - Prioritizes existing readiness and handoff JSONs into a deterministic
   no-claim next-step queue.
+- Renders a local operator start page that explains the safe steps before a
+  reviewer opens the detailed dashboard.
 - Renders a local static HTML dashboard from existing JSON outputs so a reviewer
   can inspect status, blockers, and priority without reading raw JSON.
 - Runs a release audit for repository scope, secrets, heavyweight
@@ -105,7 +118,16 @@ it is shared as a user-facing app.
 
 ## Demo
 
-Run the canonical local release gate first:
+Run the local operator entry point first:
+
+```bash
+python scripts/local_operator.py
+```
+
+On Windows, double-click `RUN_LOCAL_OPERATOR.cmd`. It runs the same safe local
+checks and writes `demo/out/operator.html` plus `demo/out/dashboard.html`.
+
+For the lower-level dashboard flow:
 
 ```bash
 python scripts/local_dashboard.py

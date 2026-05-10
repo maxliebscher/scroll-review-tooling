@@ -6,6 +6,24 @@ model artifacts, and candidate-specific material outside this public repo.
 
 ## Safe Entry Points
 
+1. On Windows, double-click `RUN_LOCAL_OPERATOR.cmd`.
+2. Or run:
+
+```bash
+python scripts/local_operator.py
+```
+
+3. After the command passes, open:
+
+```text
+demo/out/operator.html
+```
+
+The operator page explains the local steps, safety boundary, current session,
+and where to find the detailed dashboard.
+
+The lower-level dashboard entry point remains available:
+
 1. On Windows, double-click `RUN_LOCAL_DASHBOARD.cmd`.
 2. Or run:
 
@@ -25,6 +43,8 @@ telemetry, no external assets, and no network flow.
 ## Troubleshooting
 
 - If Python is missing, install Python 3.10 or newer and run the command again.
+- If the operator page is blocked, inspect `demo/out/local_operator.json` and
+  confirm the release check and session validation passed.
 - If the release gate fails, inspect `demo/out/release_check.json` and rerun
   `python scripts/check_release.py --out-json demo/out/release_check.json --out-md demo/out/release_check.md`.
 - If the session is blocked, inspect `demo/out/local_dashboard.json` and confirm
