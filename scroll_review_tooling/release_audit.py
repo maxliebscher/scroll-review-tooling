@@ -41,6 +41,7 @@ FORBIDDEN_FILE_PATTERNS = [
 ]
 REQUIRED_FILES = {
     "README.md",
+    "CHECK_LOCAL_SETUP.cmd",
     "OPEN_LOCAL_OPERATOR.cmd",
     "RUN_LOCAL_DASHBOARD.cmd",
     "RUN_LOCAL_OPERATOR.cmd",
@@ -61,9 +62,11 @@ REQUIRED_FILES = {
     "scripts/check_release.py",
     "scripts/local_dashboard.py",
     "scripts/local_operator.py",
+    "scripts/operator_doctor.py",
     "scripts/start_session.py",
     "scroll_review_tooling/common.py",
     "scroll_review_tooling/manifest_validation.py",
+    "scroll_review_tooling/operator_doctor.py",
     "scroll_review_tooling/operator_app.py",
     "scroll_review_tooling/reports.py",
     "scroll_review_tooling/review_workflow.py",
@@ -74,6 +77,7 @@ REQUIRED_FILES = {
     "tests/test_local_dashboard.py",
     "tests/test_launcher.py",
     "tests/test_operator_app.py",
+    "tests/test_operator_doctor.py",
     "tests/test_output_contracts.py",
     "tests/test_public_docs.py",
     "tests/test_release_audit.py",

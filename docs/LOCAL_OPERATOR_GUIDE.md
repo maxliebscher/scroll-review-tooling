@@ -6,6 +6,9 @@ model artifacts, and candidate-specific material outside this public repo.
 
 ## Safe Entry Points
 
+0. On a new machine, double-click `CHECK_LOCAL_SETUP.cmd` first. It writes
+   `demo/out/operator_doctor.html` and tells you whether Python, required
+   local files, the session manifest, and `demo/out/` are ready.
 1. On Windows, double-click `OPEN_LOCAL_OPERATOR.cmd` to run the checks and
    open the generated operator page.
    You can also drag a local session manifest onto `OPEN_LOCAL_OPERATOR.cmd`.
@@ -32,6 +35,10 @@ review responses only; it is not a raw-data importer.
 
 The operator page explains the local steps, safety boundary, current session,
 and where to find the detailed dashboard.
+
+Its "Guided Flow" table is the main noob-friendly control surface: it shows
+setup, session validation, release gate, dashboard, and safe sharing as
+separate tasks with a status, an action, and the generated file to inspect.
 
 It also writes `demo/out/operator_summary.md`. Share that short no-claim
 summary with a reviewer or maintainer when they need the status and next-step
@@ -65,7 +72,10 @@ the same rule; its links point only to generated local files.
 
 ## Troubleshooting
 
-- If Python is missing, install Python 3.10 or newer and run the command again.
+- If Python is missing, install Python 3.10 or newer and run
+  `CHECK_LOCAL_SETUP.cmd` again.
+- If the setup doctor is blocked, open `demo/out/operator_doctor.html`; it
+  lists each failed local check and the next local step.
 - If the operator page is blocked, inspect `demo/out/local_operator.json` and
   confirm the release check and session validation passed.
 - If a reviewer asks what to inspect, start with `demo/out/operator_summary.md`

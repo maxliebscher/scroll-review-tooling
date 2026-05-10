@@ -45,6 +45,14 @@ def _operator_guidance(blockers: list[str], payload: dict[str, Any]) -> list[dic
             }
         ]
     guidance: list[dict[str, str]] = []
+    if "setup" in blockers:
+        guidance.append(
+            {
+                "state": "setup blocked",
+                "what_it_means": f"The local setup doctor reported {_display(payload.get('doctor_decision'))}.",
+                "next_local_step": "Run CHECK_LOCAL_SETUP.cmd, then open operator_doctor.html for the exact fix.",
+            }
+        )
     if "release-check" in blockers:
         guidance.append(
             {
@@ -75,6 +83,8 @@ def _operator_guidance(blockers: list[str], payload: dict[str, Any]) -> list[dic
 def _headline(status_ok: bool, blockers: list[str]) -> str:
     if status_ok:
         return "Ready: open dashboard and share summary"
+    if "setup" in blockers:
+        return "Blocked: local setup needs attention"
     if "release-check" in blockers:
         return "Blocked: release check needs attention"
     if "session" in blockers:
@@ -82,6 +92,51 @@ def _headline(status_ok: bool, blockers: list[str]) -> str:
     if "dashboard" in blockers:
         return "Blocked: dashboard was not generated"
     return "Blocked: inspect local operator status"
+
+
+def _operator_tasks(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    setup_ok = payload.get("doctor_decision") in (None, "operator-doctor-ready")
+    release_ok = payload.get("release_check_decision") == "release-check-pass"
+    session_ok = payload.get("session_decision") == "local-review-session-valid"
+    dashboard_ok = bool(payload.get("dashboard_html")) and "dashboard" not in (payload.get("readiness_blockers") or [])
+    share_ok = bool(payload.get("operator_shareable_outputs"))
+    return [
+        {
+            "task_id": "setup",
+            "label": "Check local setup",
+            "status": "done" if setup_ok else "blocked",
+            "action": "Run CHECK_LOCAL_SETUP.cmd if this is blocked.",
+            "output": payload.get("doctor_html") or "demo/out/operator_doctor.html",
+        },
+        {
+            "task_id": "session",
+            "label": "Validate session",
+            "status": "done" if session_ok else "blocked",
+            "action": "Use a local-review-session-v1 JSON manifest that points to generated JSON summaries.",
+            "output": payload.get("operator_detail_file"),
+        },
+        {
+            "task_id": "release",
+            "label": "Run release gate",
+            "status": "done" if release_ok else "blocked",
+            "action": "Open release_check.json and fix the failed check.",
+            "output": "demo/out/release_check.json",
+        },
+        {
+            "task_id": "dashboard",
+            "label": "Open dashboard",
+            "status": "done" if dashboard_ok else "blocked",
+            "action": "Open dashboard.html after the launcher finishes.",
+            "output": payload.get("dashboard_html"),
+        },
+        {
+            "task_id": "share",
+            "label": "Share safe summaries",
+            "status": "ready" if share_ok else "blocked",
+            "action": "Share operator_summary.md and dashboard.html with reviewers when ready.",
+            "output": payload.get("operator_summary"),
+        },
+    ]
 
 
 def render_operator_app(
@@ -92,13 +147,18 @@ def render_operator_app(
     repo_root: Path,
     session_payload: dict[str, Any],
     release_payload: dict[str, Any],
+    doctor_payload: dict[str, Any] | None = None,
+    doctor_html: Path | None = None,
     dashboard_payload: dict[str, Any],
     dashboard_html: Path,
 ) -> dict[str, Any]:
+    setup_ok = doctor_payload is None or doctor_payload.get("status_ok") is True
     release_ok = release_payload.get("decision") == "release-check-pass"
     session_ok = session_payload.get("status_ok") is True
     dashboard_ok = dashboard_payload.get("status_ok") is True and dashboard_html.exists()
     blockers: list[str] = []
+    if not setup_ok:
+        blockers.append("setup")
     if not release_ok:
         blockers.append("release-check")
     if not session_ok:
@@ -114,6 +174,9 @@ def render_operator_app(
         readiness_blockers=blockers,
         session_name=session_payload.get("session_name"),
         session_decision=session_payload.get("decision"),
+        doctor_decision=doctor_payload.get("decision") if doctor_payload else None,
+        doctor_html=_safe_relative(doctor_html, repo_root) if doctor_html else None,
+        doctor_href=_relative_href(doctor_html, out_html) if doctor_html else None,
         release_check_decision=release_payload.get("decision"),
         dashboard_decision=dashboard_payload.get("decision"),
         dashboard_html=_safe_relative(dashboard_html, repo_root),
@@ -131,13 +194,14 @@ def render_operator_app(
     payload["operator_headline_status"] = _headline(status_ok, blockers)
     payload["operator_can_continue"] = status_ok
     payload["operator_next_step"] = guidance[0]["next_local_step"] if guidance else "Inspect local_operator.json."
-    payload["operator_next_command"] = "OPEN_LOCAL_OPERATOR.cmd" if status_ok else "RUN_LOCAL_OPERATOR.cmd"
+    payload["operator_next_command"] = "OPEN_LOCAL_OPERATOR.cmd" if status_ok else ("CHECK_LOCAL_SETUP.cmd" if "setup" in blockers else "RUN_LOCAL_OPERATOR.cmd")
     payload["operator_detail_file"] = _safe_relative(out_json, repo_root)
     payload["operator_shareable_outputs"] = (
         [payload.get("operator_summary"), payload.get("dashboard_html"), payload.get("operator_detail_file"), "demo/out/release_check.json"]
         if status_ok
         else []
     )
+    payload["operator_tasks"] = _operator_tasks(payload)
     write_json(out_json, payload)
     out_html.parent.mkdir(parents=True, exist_ok=True)
     out_html.write_text(_operator_html(payload), encoding="utf-8", newline="\n")
@@ -198,6 +262,7 @@ def _operator_html(payload: dict[str, Any]) -> str:
         '    <span class="badge">manifest guided</span>',
         "  </div>",
         '  <nav class="actions" aria-label="Local report links">',
+        f'    <a class="action" href="{_html(payload.get("doctor_href"))}">Open setup doctor</a>',
         f'    <a class="action" href="{_html(payload.get("dashboard_href"))}">Open detailed dashboard</a>',
         f'    <a class="action" href="{_html(payload.get("operator_status_href"))}">Open operator status JSON</a>',
         f'    <a class="action" href="{_html(payload.get("release_check_href"))}">Open release check JSON</a>',
@@ -210,11 +275,26 @@ def _operator_html(payload: dict[str, Any]) -> str:
         f'    <div class="card"><div class="label">Session</div><div class="value">{_html(payload.get("session_name"))}</div></div>',
         f'    <div class="card"><div class="label">Next Step</div><div class="value">{_html(payload.get("operator_headline_status"))}</div></div>',
         "  </section>",
+        "  <h2>Guided Flow</h2>",
+        "  <table>",
+        "    <thead><tr><th>Task</th><th>Status</th><th>Action</th><th>Output</th></tr></thead>",
+        "    <tbody>",
+    ]
+    for task in payload.get("operator_tasks") or []:
+        if isinstance(task, dict):
+            lines.append(
+                f"      <tr><td>{_html(task.get('label'))}</td><td><code>{_html(task.get('status'))}</code></td><td>{_html(task.get('action'))}</td><td><code>{_html(task.get('output'))}</code></td></tr>"
+            )
+    lines.extend(
+        [
+        "    </tbody>",
+        "  </table>",
         "  <h2>What To Do</h2>",
         "  <table>",
         "    <thead><tr><th>Step</th><th>Operator action</th><th>Plain-language result</th></tr></thead>",
         "    <tbody>",
-    ]
+        ]
+    )
     for step, action, result in rows:
         lines.append(f"      <tr><td>{_html(step)}</td><td>{_html(action)}</td><td>{_html(result)}</td></tr>")
     lines.extend(

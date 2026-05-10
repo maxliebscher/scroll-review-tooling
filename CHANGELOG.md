@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.8.0 Local Operator Usability
+
+- Added `CHECK_LOCAL_SETUP.cmd` and `python scripts/operator_doctor.py` so a
+  local operator can verify Python, required files, session validation, and
+  generated-output permissions before using the dashboard.
+- Added `local-operator-doctor-v1` JSON, Markdown, and HTML outputs.
+- Added `operator_tasks` to the operator JSON and Guided Flow table so setup,
+  session, release, dashboard, and sharing states are visible without reading
+  raw JSON.
+- Kept the operator line local-only and no-claim: no OCR, no transcription, no
+  reading, no inference, no network calls, and no public or prize claim.
+
 ## v0.6.0 Release Candidate
 
 - Added public-safe manifest validation for review packs, surface/VC3D review,

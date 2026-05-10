@@ -27,7 +27,18 @@ work. It does not look at a scroll and tell you what it says. Instead, it looks
 at small JSON summary files that already exist and asks: is this review package
 complete, controlled, safe to discuss, and ready for the next private step?
 
-A new user can start with the local operator page:
+A new user can first check whether the local setup is usable:
+
+```bash
+python scripts/operator_doctor.py
+```
+
+On Windows, double-click `CHECK_LOCAL_SETUP.cmd`. It writes
+`demo/out/operator_doctor.html`, a plain setup report that says whether Python,
+the required local files, the session manifest, and the generated-output folder
+are ready.
+
+Then start the local operator page:
 
 ```bash
 python scripts/local_operator.py
@@ -105,6 +116,8 @@ elsewhere.
   evaluation, high-resolution rescan priority, or private review.
 - Prioritizes existing readiness and handoff JSONs into a deterministic
   no-claim next-step queue.
+- Checks the local setup with an operator doctor so non-experts can see whether
+  Python, required files, output permissions, and session validation are ready.
 - Renders a local operator start page that explains the safe steps before a
   reviewer opens the detailed dashboard. The page links only to generated local
   files.
@@ -146,7 +159,14 @@ it is shared as a user-facing app.
 
 ## Demo
 
-Run the local operator entry point first:
+Run the local setup doctor first if this is a new machine:
+
+```bash
+python scripts/operator_doctor.py
+```
+
+On Windows, double-click `CHECK_LOCAL_SETUP.cmd`; then run the operator entry
+point:
 
 ```bash
 python scripts/local_operator.py

@@ -8,6 +8,8 @@ This file is for future chats or agents continuing the public
 - `master` includes the v0.6 local dashboard toolkit.
 - `codex/v0.7-operator-flow` adds the static operator page and local
   one-click launcher line.
+- v0.8 usability work adds a local setup doctor and explicit operator task
+  list over the same no-claim JSON contracts.
 - Package version: `0.6.0`.
 - Core scope: public-safe no-claim review readiness, synthetic demo manifests,
   local dashboard, release audit, leak scan, and generated reports.
@@ -20,6 +22,7 @@ Run these checks before editing:
 ```bash
 git status --short --branch
 python -m unittest discover -s tests
+python scripts/operator_doctor.py
 python scripts/check_release.py --out-json demo/out/release_check.json --out-md demo/out/release_check.md
 python -m scroll_review_tooling.release_audit --root . --out-json demo/out/release_audit.json
 ```
@@ -31,12 +34,15 @@ Then inspect:
 - `docs/MANIFESTS.md`
 - `docs/OPERATOR_APP_ROADMAP.md`
 - `OPEN_LOCAL_OPERATOR.cmd`
+- `CHECK_LOCAL_SETUP.cmd`
 - `RUN_LOCAL_OPERATOR.cmd`
 - `START_REVIEW_SESSION.cmd`
 - `scripts/local_dashboard.py`
 - `scripts/local_operator.py`
+- `scripts/operator_doctor.py`
 - `scroll_review_tooling/reports.py`
 - `scroll_review_tooling/operator_app.py`
+- `scroll_review_tooling/operator_doctor.py`
 - `tests/test_output_contracts.py`
 
 ## Guardrails
@@ -62,6 +68,9 @@ Then inspect:
 ## Next Useful Work
 
 - Make `demo/out/operator.html` clearer when sessions are blocked.
+- Keep `demo/out/operator_doctor.html` as the first-stop setup report for
+  normal local operators.
+- Keep `operator_tasks` stable so future UI layers can render the same flow.
 - Preserve `demo/out/operator_summary.md` as the short no-claim share handoff.
 - Keep `operator_guidance` current as blocked states become more specific.
 - Preserve `sessions/` as ignored generated local output.

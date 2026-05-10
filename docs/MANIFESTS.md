@@ -371,6 +371,21 @@ network.
 
 ## Local Operator Output
 
+Use the setup doctor first when a non-expert is trying the tool on a new
+machine:
+
+```bash
+python scripts/operator_doctor.py
+```
+
+On Windows, `CHECK_LOCAL_SETUP.cmd` runs the same check. It writes
+`demo/out/operator_doctor.json`, `demo/out/operator_doctor.md`, and
+`demo/out/operator_doctor.html`. The JSON output uses
+`local-operator-doctor-v1` and reports local checks for Python version,
+required files, output-folder write access, session validation, and the
+no-network data boundary. It does not read imagery, import evidence, run
+models, or authorize claims.
+
 Use `scripts/local_operator.py` to generate the no-claim operator start page:
 
 ```bash
@@ -392,7 +407,8 @@ The JSON output uses `local-operator-app-v1` and keeps the standard no-claim
 fields: `status_ok`, `readiness_stage`, `readiness_blockers`, `claim_status`,
 `public_claim_allowed`, and `target_inference_allowed`. It also includes
 `operator_guidance`, a short list of plain-language next local steps for ready
-or blocked states. For future UI shells it also includes
+or blocked states. It includes `operator_tasks`, a stable setup/session/release/
+dashboard/share task list for future UI shells, plus
 `operator_headline_status`, `operator_can_continue`, `operator_next_step`,
 `operator_next_command`, and `operator_shareable_outputs`.
 

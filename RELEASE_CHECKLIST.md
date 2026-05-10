@@ -3,6 +3,8 @@
 Use this checklist before pushing or sharing a release candidate.
 
 - Run `git status --short --branch` and review every tracked and untracked path.
+- Run `python scripts/operator_doctor.py`.
+- Run `cmd /c CHECK_LOCAL_SETUP.cmd /nopause`.
 - Run `python scripts/local_operator.py`.
 - Run `cmd /c RUN_LOCAL_OPERATOR.cmd`.
 - Run `python scripts/start_session.py --demo --session-dir demo/out/session_check`.
@@ -12,6 +14,8 @@ Use this checklist before pushing or sharing a release candidate.
 - Run `python -m scroll_review_tooling.review_workflow dashboard --session demo/session_manifest.json`.
 - Confirm `OPEN_LOCAL_OPERATOR.cmd` only calls `RUN_LOCAL_OPERATOR.cmd`, opens
   `demo\out\operator.html`, and contains no network URL.
+- Confirm `CHECK_LOCAL_SETUP.cmd` only wraps `python scripts\operator_doctor.py`
+  and contains no network URL.
 - Confirm `RUN_LOCAL_OPERATOR.cmd` only wraps `python scripts\local_operator.py` and does not open a browser or contact the network.
 - Confirm `START_REVIEW_SESSION.cmd` only wraps `python scripts\start_session.py --demo`, forwards local arguments, and contains no network URL.
 - Confirm `RUN_LOCAL_DASHBOARD.cmd` only wraps `python scripts\local_dashboard.py` and does not open a browser or contact the network.
@@ -27,6 +31,10 @@ Use this checklist before pushing or sharing a release candidate.
 - Confirm path-priority reports rank handoff-ready outputs ahead of blocked outputs.
 - Confirm `demo/out/dashboard.html` is generated locally, ignored, no-claim, and self-contained.
 - Confirm `demo/out/operator.html` is generated locally, ignored, no-claim, and self-contained.
+- Confirm `demo/out/operator_doctor.html` is generated locally, ignored,
+  no-claim, and self-contained.
+- Confirm `demo/out/local_operator.json` contains `operator_tasks` and clear
+  setup/session/release/dashboard/share statuses.
 - Confirm `demo/session_manifest.json` is synthetic and references only generated JSON summaries.
 - Confirm the dashboard and operator page contain no external URLs, scripts, upload behavior, or remote app behavior.
 - Confirm the runnable demo path contains only synthetic demo data.

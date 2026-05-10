@@ -10,6 +10,8 @@ or submission generator.
 ## Current Direction
 
 - Keep the CLI and JSON contracts as the stable core.
+- Start the noob path with `CHECK_LOCAL_SETUP.cmd` so the user gets a plain
+  setup report before trying to interpret dashboard output.
 - Add a local operator start page for first-run explanation and step guidance.
 - Add a local launcher path where users can drag JSON reviewer
   responses only.
@@ -22,21 +24,25 @@ or submission generator.
 
 ## Intended Flow
 
-1. Start locally with `OPEN_LOCAL_OPERATOR.cmd`, `RUN_LOCAL_OPERATOR.cmd`, or
+1. Check local setup with `CHECK_LOCAL_SETUP.cmd` or
+   `python scripts/operator_doctor.py`.
+2. Start locally with `OPEN_LOCAL_OPERATOR.cmd`, `RUN_LOCAL_OPERATOR.cmd`, or
    `python scripts/local_operator.py`.
-2. Optionally pass or drag in a local session manifest.
-3. Read the short operator explanation and click the local dashboard link.
-4. Confirm the synthetic session and release checks are ready.
-5. Open `demo/out/dashboard.html` for readiness, blockers, handoff, and priority.
-6. Share `demo/out/operator_summary.md` and the dashboard when reviewers need
+3. Optionally pass or drag in a local session manifest.
+4. Read the Guided Flow table and click the local dashboard link.
+5. Confirm the setup, synthetic session, release checks, and dashboard are ready.
+6. Open `demo/out/dashboard.html` for readiness, blockers, handoff, and priority.
+7. Share `demo/out/operator_summary.md` and the dashboard when reviewers need
    status and next-step context.
-7. Use `START_REVIEW_SESSION.cmd` when a reviewer needs a fresh local session
+8. Use `START_REVIEW_SESSION.cmd` when a reviewer needs a fresh local session
    folder with isolated outputs.
 
 ## Future Work
 
 - Keep `OPEN_LOCAL_OPERATOR.cmd` as the noob path until a packaged app exists.
-- Improve the operator start page with richer blocked-state guidance.
+- Preserve the setup doctor and `operator_tasks` as the contract for future UI.
+- Improve the operator start page with richer blocked-state guidance only when
+  it maps to stable machine-readable blockers.
 - Add a local workspace selector later, but only for session manifests.
 - Add a real one-window workflow later only after local-link navigation is
   stable and audited.

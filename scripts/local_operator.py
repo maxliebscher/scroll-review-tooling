@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT))
 
 from scripts.check_release import build_release_check_payload, write_outputs
 from scroll_review_tooling.operator_app import render_operator_app
+from scroll_review_tooling.operator_doctor import build_doctor_payload, write_doctor_outputs
 from scroll_review_tooling.reports import render_dashboard
 from scroll_review_tooling.sessions import session_input_paths, session_output_path, validate_session_manifest
 
@@ -21,10 +22,20 @@ def main() -> None:
     parser.add_argument("--operator-html", default="demo/out/operator.html")
     parser.add_argument("--out-json", default="demo/out/local_operator.json")
     parser.add_argument("--out-md", default="demo/out/operator_summary.md")
+    parser.add_argument("--doctor-json", default="demo/out/operator_doctor.json")
+    parser.add_argument("--doctor-md", default="demo/out/operator_doctor.md")
+    parser.add_argument("--doctor-html", default="demo/out/operator_doctor.html")
     parser.add_argument("--release-json", default="demo/out/release_check.json")
     parser.add_argument("--release-md", default="demo/out/release_check.md")
     args = parser.parse_args()
 
+    doctor_payload = build_doctor_payload(ROOT, Path(args.session))
+    write_doctor_outputs(
+        doctor_payload,
+        out_json=ROOT / args.doctor_json,
+        out_md=ROOT / args.doctor_md,
+        out_html=ROOT / args.doctor_html,
+    )
     release_payload = build_release_check_payload()
     write_outputs(release_payload, args.release_json, args.release_md)
     session_payload = validate_session_manifest(ROOT / args.session)
@@ -52,6 +63,8 @@ def main() -> None:
         repo_root=ROOT,
         session_payload=session_payload,
         release_payload=release_payload,
+        doctor_payload=doctor_payload,
+        doctor_html=ROOT / args.doctor_html,
         dashboard_payload=dashboard_payload,
         dashboard_html=dashboard_html,
     )
