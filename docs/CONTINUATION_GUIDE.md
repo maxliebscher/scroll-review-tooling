@@ -61,6 +61,7 @@ Then inspect:
 ## Next Useful Work
 
 - Make `demo/out/operator.html` clearer when sessions are blocked.
+- Preserve `demo/out/operator_summary.md` as the short no-claim share handoff.
 - Add a local workspace selector later, but only for session manifests.
 - Add output-folder summaries so non-experts know what to share and why.
 - Add screenshot-based review of the operator page before any public release.

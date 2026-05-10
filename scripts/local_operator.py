@@ -20,6 +20,7 @@ def main() -> None:
     parser.add_argument("--session", default="demo/session_manifest.json")
     parser.add_argument("--operator-html", default="demo/out/operator.html")
     parser.add_argument("--out-json", default="demo/out/local_operator.json")
+    parser.add_argument("--out-md", default="demo/out/operator_summary.md")
     parser.add_argument("--release-json", default="demo/out/release_check.json")
     parser.add_argument("--release-md", default="demo/out/release_check.md")
     args = parser.parse_args()
@@ -47,6 +48,7 @@ def main() -> None:
     result = render_operator_app(
         out_html=ROOT / args.operator_html,
         out_json=ROOT / args.out_json,
+        out_md=ROOT / args.out_md,
         repo_root=ROOT,
         session_payload=session_payload,
         release_payload=release_payload,

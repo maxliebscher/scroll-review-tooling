@@ -379,9 +379,11 @@ python scripts/local_operator.py
 
 On Windows, `RUN_LOCAL_OPERATOR.cmd` is the thin double-click wrapper. The
 command writes `demo/out/operator.html`, `demo/out/local_operator.json`, and the
-usual dashboard outputs. The operator page is static: it links only to generated
-local files such as `dashboard.html`, `local_operator.json`, and
-`release_check.json`. It does not run checks from the browser.
+usual dashboard outputs. It also writes `demo/out/operator_summary.md` as a
+short no-claim share summary. The operator page is static: it links only to
+generated local files such as `dashboard.html`, `local_operator.json`,
+`operator_summary.md`, and `release_check.json`. It does not run checks from
+the browser.
 
 The JSON output uses `local-operator-app-v1` and keeps the standard no-claim
 fields: `status_ok`, `readiness_stage`, `readiness_blockers`, `claim_status`,

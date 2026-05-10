@@ -25,7 +25,8 @@ or submission generator.
 2. Read the short operator explanation and click the local dashboard link.
 3. Confirm the synthetic session and release checks are ready.
 4. Open `demo/out/dashboard.html` for readiness, blockers, handoff, and priority.
-5. Share only generated no-claim summaries with reviewers.
+5. Share `demo/out/operator_summary.md` and the dashboard when reviewers need
+   status and next-step context.
 
 ## Future Work
 
@@ -34,7 +35,8 @@ or submission generator.
 - Add a local workspace selector that accepts only session manifests.
 - Add a real one-window workflow later only after local-link navigation is
   stable and audited.
-- Add explicit output-folder summaries for generated reports.
+- Expand the share summary into a richer reviewer handoff only after its
+  no-claim contract is stable.
 - Add a private-side adapter later, outside the public demo path, for internal
   review sessions that already produce sanitized JSON summaries.
 - Consider a zipped Windows bundle only after the session and operator contracts

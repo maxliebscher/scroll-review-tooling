@@ -26,6 +26,10 @@ the command to print paths without opening a browser.
 The operator page explains the local steps, safety boundary, current session,
 and where to find the detailed dashboard.
 
+It also writes `demo/out/operator_summary.md`. Share that short no-claim
+summary with a reviewer or maintainer when they need the status and next-step
+context without private evidence.
+
 The page is static. It includes local links to generated reports, but changing
 inputs does not update the browser by itself. Rerun `RUN_LOCAL_OPERATOR.cmd` or
 `python scripts/local_operator.py`, then refresh `demo/out/operator.html`.
@@ -54,6 +58,8 @@ the same rule; its links point only to generated local files.
 - If Python is missing, install Python 3.10 or newer and run the command again.
 - If the operator page is blocked, inspect `demo/out/local_operator.json` and
   confirm the release check and session validation passed.
+- If a reviewer asks what to inspect, start with `demo/out/operator_summary.md`
+  and `demo/out/dashboard.html`.
 - If the release gate fails, inspect `demo/out/release_check.json` and rerun
   `python scripts/check_release.py --out-json demo/out/release_check.json --out-md demo/out/release_check.md`.
 - If the session is blocked, inspect `demo/out/local_dashboard.json` and confirm

@@ -38,7 +38,9 @@ one-click flow: it runs the local checks and opens the generated operator page.
 If you prefer a launcher that does not open a browser, use
 `RUN_LOCAL_OPERATOR.cmd`. It writes
 `demo/out/operator.html`, a plain-language start page, and
-`demo/out/dashboard.html`, the detailed status board.
+`demo/out/dashboard.html`, the detailed status board. It also writes
+`demo/out/operator_summary.md`, a short no-claim share summary for reviewers or
+maintainers.
 
 The current operator page is static. It has local links to generated reports,
 but it does not run checks from inside the browser. If a session file or JSON
@@ -136,8 +138,8 @@ On Windows, double-click `OPEN_LOCAL_OPERATOR.cmd` to run the same safe local
 checks and open `demo/out/operator.html`. Use `RUN_LOCAL_OPERATOR.cmd` when you
 want the command to print paths without opening a browser.
 Open `demo/out/operator.html` first. It explains the current status and links
-to the generated dashboard and JSON summaries. It is a static local page, not a
-browser app that runs checks itself.
+to the generated dashboard, JSON summaries, and share summary. It is a static
+local page, not a browser app that runs checks itself.
 
 For the lower-level dashboard flow:
 

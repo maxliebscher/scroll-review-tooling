@@ -17,6 +17,7 @@ class OperatorAppTests(unittest.TestCase):
             payload = render_operator_app(
                 out_html=root / "demo" / "out" / "operator.html",
                 out_json=root / "demo" / "out" / "local_operator.json",
+                out_md=root / "demo" / "out" / "operator_summary.md",
                 repo_root=root,
                 session_payload={"status_ok": True, "decision": "local-review-session-valid", "session_name": "Synthetic session"},
                 release_payload={"decision": "release-check-pass"},
@@ -24,6 +25,7 @@ class OperatorAppTests(unittest.TestCase):
                 dashboard_html=dashboard,
             )
             html = (root / "demo" / "out" / "operator.html").read_text(encoding="utf-8")
+            md = (root / "demo" / "out" / "operator_summary.md").read_text(encoding="utf-8")
             self.assertEqual(payload["protocol_version"], OPERATOR_APP_PROTOCOL_VERSION)
             self.assertEqual(payload["decision"], "local-operator-ready")
             self.assertTrue(payload["status_ok"])
@@ -34,7 +36,11 @@ class OperatorAppTests(unittest.TestCase):
             self.assertIn('href="dashboard.html"', html)
             self.assertIn('href="local_operator.json"', html)
             self.assertIn('href="release_check.json"', html)
+            self.assertIn('href="operator_summary.md"', html)
             self.assertIn("this page is static", html)
+            self.assertIn("Who Gets What", html)
+            self.assertIn("Share Guidance", md)
+            self.assertIn("Public claim allowed: `False`", md)
             self.assertNotIn("<script", html.lower())
             self.assertNotIn("http://", html.lower())
             self.assertNotIn("https://", html.lower())

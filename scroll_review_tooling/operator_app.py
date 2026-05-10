@@ -39,6 +39,7 @@ def render_operator_app(
     *,
     out_html: Path,
     out_json: Path,
+    out_md: Path | None = None,
     repo_root: Path,
     session_payload: dict[str, Any],
     release_payload: dict[str, Any],
@@ -70,13 +71,18 @@ def render_operator_app(
         dashboard_href=_relative_href(dashboard_html, out_html),
         release_check_href=_relative_href(repo_root / "demo/out/release_check.json", out_html),
         operator_status_href=_relative_href(out_json, out_html),
+        operator_summary_href=_relative_href(out_md, out_html) if out_md else None,
         operator_html=_safe_relative(out_html, repo_root),
+        operator_summary=_safe_relative(out_md, repo_root) if out_md else None,
         allowed_data_flow="session-json-only",
         local_only=True,
     )
     write_json(out_json, payload)
     out_html.parent.mkdir(parents=True, exist_ok=True)
     out_html.write_text(_operator_html(payload), encoding="utf-8", newline="\n")
+    if out_md:
+        out_md.parent.mkdir(parents=True, exist_ok=True)
+        out_md.write_text(_operator_markdown(payload), encoding="utf-8", newline="\n")
     return payload
 
 
@@ -134,6 +140,7 @@ def _operator_html(payload: dict[str, Any]) -> str:
         f'    <a class="action" href="{_html(payload.get("dashboard_href"))}">Open detailed dashboard</a>',
         f'    <a class="action" href="{_html(payload.get("operator_status_href"))}">Open operator status JSON</a>',
         f'    <a class="action" href="{_html(payload.get("release_check_href"))}">Open release check JSON</a>',
+        f'    <a class="action" href="{_html(payload.get("operator_summary_href"))}">Open share summary</a>',
         "  </nav>",
         '  <section class="grid" aria-label="Summary">',
         f'    <div class="card"><div class="label">Decision</div><div class="value">{_html(payload.get("decision"))}</div></div>',
@@ -160,7 +167,17 @@ def _operator_html(payload: dict[str, Any]) -> str:
             f"      <tr><td>Session validation</td><td><code>{_html(payload.get('session_decision'))}</code></td></tr>",
             f"      <tr><td>Dashboard</td><td><code>{_html(payload.get('dashboard_decision'))}</code></td></tr>",
             f"      <tr><td>Dashboard file</td><td><code>{_html(payload.get('dashboard_html'))}</code></td></tr>",
+            f"      <tr><td>Share summary</td><td><code>{_html(payload.get('operator_summary'))}</code></td></tr>",
             f"      <tr><td>Blockers</td><td><code>{_html(payload.get('readiness_blockers'))}</code></td></tr>",
+            "    </tbody>",
+            "  </table>",
+            "  <h2>Who Gets What</h2>",
+            "  <table>",
+            "    <thead><tr><th>Audience</th><th>Share</th><th>Reason</th></tr></thead>",
+            "    <tbody>",
+            "      <tr><td>Reviewer</td><td><code>operator_summary.md</code> and <code>dashboard.html</code></td><td>They need readiness, blockers, and next-step context without raw private material.</td></tr>",
+            "      <tr><td>Maintainer</td><td><code>local_operator.json</code> and <code>release_check.json</code></td><td>They need machine-readable status and gate evidence.</td></tr>",
+            "      <tr><td>Public repo</td><td>Only synthetic fixtures and no-claim docs</td><td>Public history should show tooling behavior, not private evidence.</td></tr>",
             "    </tbody>",
             "  </table>",
             "  <h2>Data Boundary</h2>",
@@ -170,4 +187,30 @@ def _operator_html(payload: dict[str, Any]) -> str:
             "</html>",
         ]
     )
+    return "\n".join(lines) + "\n"
+
+
+def _operator_markdown(payload: dict[str, Any]) -> str:
+    lines = [
+        "# Local Operator Summary",
+        "",
+        f"- Decision: `{payload.get('decision')}`",
+        f"- Status OK: `{payload.get('status_ok')}`",
+        f"- Readiness: `{payload.get('readiness_stage')}`",
+        f"- Session: `{payload.get('session_name')}`",
+        f"- Blockers: `{_display(payload.get('readiness_blockers'))}`",
+        f"- Dashboard: `{payload.get('dashboard_html')}`",
+        f"- Release check: `{payload.get('release_check_decision')}`",
+        f"- Claim status: `{payload.get('claim_status')}`",
+        f"- Public claim allowed: `{payload.get('public_claim_allowed')}`",
+        f"- Target inference allowed: `{payload.get('target_inference_allowed')}`",
+        "",
+        "## Share Guidance",
+        "",
+        "- Reviewer: share this summary and the generated dashboard when you need readiness, blockers, and next-step context.",
+        "- Maintainer: share `local_operator.json` and `release_check.json` when machine-readable gate evidence is needed.",
+        "- Public repo: share only synthetic fixtures, no-claim docs, and public-safe generated summaries.",
+        "",
+        "Do not share private evidence, raw scans, collaboration exports, model artifacts, candidate coordinates, OCR, transcription, reading attempts, or public/prize claims from this public package.",
+    ]
     return "\n".join(lines) + "\n"
