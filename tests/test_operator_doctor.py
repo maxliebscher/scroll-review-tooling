@@ -81,6 +81,28 @@ class OperatorDoctorTests(unittest.TestCase):
             self.assertIn("session-manifest", payload["readiness_blockers"])
             self.assertEqual(payload["operator_next_command"], "CHECK_LOCAL_SETUP.cmd")
 
+    def test_doctor_allows_first_run_missing_generated_demo_outputs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.build_repo(root)
+            (root / "demo/session_manifest.json").write_text(
+                """{
+  "session_protocol_version": "local-review-session-v1",
+  "session_name": "Synthetic operator session",
+  "dashboard_inputs": ["demo/out/first_run_missing_status_for_doctor_test.json"],
+  "dashboard_output": "demo/out/dashboard.html",
+  "claim_safety": "No OCR, no transcription, no reading, no public claim."
+}
+""",
+                encoding="utf-8",
+            )
+            payload = build_doctor_payload(root, Path("demo/session_manifest.json"))
+            self.assertEqual(payload["decision"], "operator-doctor-ready")
+            self.assertTrue(payload["status_ok"])
+            session_check = [check for check in payload["checks"] if check["check_id"] == "session-manifest"][0]
+            self.assertEqual(session_check["status"], "ok")
+            self.assertIn("generated demo outputs", session_check["detail"])
+
     def test_doctor_escapes_written_html(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

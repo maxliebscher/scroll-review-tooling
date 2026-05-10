@@ -51,6 +51,8 @@ REQUIRED_FILES = {
     "SECURITY.md",
     "PRIVACY.md",
     "RELEASE_CHECKLIST.md",
+    "START_HERE.cmd",
+    "START_HERE.md",
     "pyproject.toml",
     ".github/workflows/test.yml",
     "demo/handoff_manifest.json",

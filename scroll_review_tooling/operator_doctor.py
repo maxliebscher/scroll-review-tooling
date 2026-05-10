@@ -33,6 +33,13 @@ def _display(value: Any) -> str:
     return str(value)
 
 
+def _missing_generated_inputs_only(session_payload: dict[str, Any]) -> bool:
+    violations = session_payload.get("violations") or []
+    if not violations or not all(isinstance(item, str) for item in violations):
+        return False
+    return all(item.startswith("missing-dashboard-input:demo/out/") for item in violations)
+
+
 def _html(value: Any) -> str:
     return escape(_display(value), quote=True)
 
@@ -97,9 +104,18 @@ def build_doctor_payload(repo_root: Path, session_manifest: Path) -> dict[str, A
     if session_manifest.exists():
         try:
             session_payload = validate_session_manifest(session_manifest)
-            session_ok = session_payload.get("status_ok") is True
-            session_detail = str(session_payload.get("decision"))
-            session_next = "none" if session_ok else "Open the session JSON and fix the listed violations."
+            if session_payload.get("status_ok") is True:
+                session_ok = True
+                session_detail = str(session_payload.get("decision"))
+                session_next = "none"
+            elif _missing_generated_inputs_only(session_payload):
+                session_ok = True
+                session_detail = "session manifest valid; generated demo outputs will be created by START_HERE.cmd"
+                session_next = "Run START_HERE.cmd to generate the demo summaries, operator page, and dashboard."
+            else:
+                session_ok = False
+                session_detail = str(session_payload.get("decision"))
+                session_next = "Open the session JSON and fix the listed violations."
         except Exception as exc:  # pragma: no cover - defensive user-facing guard
             session_ok = False
             session_detail = f"could not read session manifest: {exc}"

@@ -2,6 +2,8 @@
 
 ## v0.8.0 Local Operator Usability
 
+- Added `START_HERE.cmd` and `START_HERE.md` as the beginner-facing local
+  Windows entry point over the setup doctor and operator launcher.
 - Added `CHECK_LOCAL_SETUP.cmd` and `python scripts/operator_doctor.py` so a
   local operator can verify Python, required files, session validation, and
   generated-output permissions before using the dashboard.

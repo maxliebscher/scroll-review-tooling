@@ -6,6 +6,9 @@ model artifacts, and candidate-specific material outside this public repo.
 
 ## Safe Entry Points
 
+For the simplest Windows path, double-click `START_HERE.cmd`. It runs the setup
+doctor, builds the local operator page, and opens `demo/out/operator.html`.
+
 0. On a new machine, double-click `CHECK_LOCAL_SETUP.cmd` first. It writes
    `demo/out/operator_doctor.html` and tells you whether Python, required
    local files, the session manifest, and `demo/out/` are ready.
@@ -72,6 +75,7 @@ the same rule; its links point only to generated local files.
 
 ## Troubleshooting
 
+- If you are unsure where to begin, use `START_HERE.cmd`.
 - If Python is missing, install Python 3.10 or newer and run
   `CHECK_LOCAL_SETUP.cmd` again.
 - If the setup doctor is blocked, open `demo/out/operator_doctor.html`; it

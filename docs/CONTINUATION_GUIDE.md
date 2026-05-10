@@ -10,6 +10,8 @@ This file is for future chats or agents continuing the public
   one-click launcher line.
 - v0.8 usability work adds a local setup doctor and explicit operator task
   list over the same no-claim JSON contracts.
+- v0.9 usability work adds `START_HERE.cmd` and `START_HERE.md` as the
+  beginner-facing local entry point.
 - Package version: `0.6.0`.
 - Core scope: public-safe no-claim review readiness, synthetic demo manifests,
   local dashboard, release audit, leak scan, and generated reports.
@@ -35,6 +37,8 @@ Then inspect:
 - `docs/OPERATOR_APP_ROADMAP.md`
 - `OPEN_LOCAL_OPERATOR.cmd`
 - `CHECK_LOCAL_SETUP.cmd`
+- `START_HERE.cmd`
+- `START_HERE.md`
 - `RUN_LOCAL_OPERATOR.cmd`
 - `START_REVIEW_SESSION.cmd`
 - `scripts/local_dashboard.py`
@@ -70,6 +74,8 @@ Then inspect:
 - Make `demo/out/operator.html` clearer when sessions are blocked.
 - Keep `demo/out/operator_doctor.html` as the first-stop setup report for
   normal local operators.
+- Keep `START_HERE.cmd` as the obvious Windows first click while it remains a
+  thin wrapper over the setup doctor and operator launcher.
 - Keep `operator_tasks` stable so future UI layers can render the same flow.
 - Preserve `demo/out/operator_summary.md` as the short no-claim share handoff.
 - Keep `operator_guidance` current as blocked states become more specific.

@@ -27,7 +27,16 @@ work. It does not look at a scroll and tell you what it says. Instead, it looks
 at small JSON summary files that already exist and asks: is this review package
 complete, controlled, safe to discuss, and ready for the next private step?
 
-A new user can first check whether the local setup is usable:
+A new Windows user can start with the clearest current entry point:
+
+```text
+START_HERE.cmd
+```
+
+It checks the setup, builds the local operator page, and opens
+`demo/out/operator.html`.
+
+You can also check whether the local setup is usable directly:
 
 ```bash
 python scripts/operator_doctor.py
@@ -44,8 +53,8 @@ Then start the local operator page:
 python scripts/local_operator.py
 ```
 
-On Windows, double-click `OPEN_LOCAL_OPERATOR.cmd` for the closest current
-one-click flow: it runs the local checks and opens the generated operator page.
+On Windows, double-click `OPEN_LOCAL_OPERATOR.cmd` if you want to skip the
+separate setup screen and go straight to the generated operator page.
 If you prefer a launcher that does not open a browser, use
 `RUN_LOCAL_OPERATOR.cmd`. It writes
 `demo/out/operator.html`, a plain-language start page, and
@@ -165,8 +174,9 @@ Run the local setup doctor first if this is a new machine:
 python scripts/operator_doctor.py
 ```
 
-On Windows, double-click `CHECK_LOCAL_SETUP.cmd`; then run the operator entry
-point:
+On Windows, double-click `START_HERE.cmd` for the full local start flow, or
+`CHECK_LOCAL_SETUP.cmd` if you only want the setup report. Then run the operator
+entry point:
 
 ```bash
 python scripts/local_operator.py

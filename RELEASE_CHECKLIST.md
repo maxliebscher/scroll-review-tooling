@@ -5,6 +5,7 @@ Use this checklist before pushing or sharing a release candidate.
 - Run `git status --short --branch` and review every tracked and untracked path.
 - Run `python scripts/operator_doctor.py`.
 - Run `cmd /c CHECK_LOCAL_SETUP.cmd /nopause`.
+- Run `cmd /c START_HERE.cmd /nopause /noopen`.
 - Run `python scripts/local_operator.py`.
 - Run `cmd /c RUN_LOCAL_OPERATOR.cmd`.
 - Run `python scripts/start_session.py --demo --session-dir demo/out/session_check`.
@@ -16,6 +17,8 @@ Use this checklist before pushing or sharing a release candidate.
   `demo\out\operator.html`, and contains no network URL.
 - Confirm `CHECK_LOCAL_SETUP.cmd` only wraps `python scripts\operator_doctor.py`
   and contains no network URL.
+- Confirm `START_HERE.cmd` only calls `CHECK_LOCAL_SETUP.cmd /nopause` and
+  `OPEN_LOCAL_OPERATOR.cmd`, and contains no network URL.
 - Confirm `RUN_LOCAL_OPERATOR.cmd` only wraps `python scripts\local_operator.py` and does not open a browser or contact the network.
 - Confirm `START_REVIEW_SESSION.cmd` only wraps `python scripts\start_session.py --demo`, forwards local arguments, and contains no network URL.
 - Confirm `RUN_LOCAL_DASHBOARD.cmd` only wraps `python scripts\local_dashboard.py` and does not open a browser or contact the network.
