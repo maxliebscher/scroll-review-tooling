@@ -11,6 +11,7 @@ class ReleaseAuditTests(unittest.TestCase):
     def build_minimal_repo(self, root: Path) -> None:
         for rel in [
             "README.md",
+            "OPEN_LOCAL_OPERATOR.cmd",
             "RUN_LOCAL_DASHBOARD.cmd",
             "RUN_LOCAL_OPERATOR.cmd",
             "CHANGELOG.md",

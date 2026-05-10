@@ -13,13 +13,16 @@ or submission generator.
 - Add a local operator start page for first-run explanation and step guidance.
 - Keep generated HTML self-contained: no scripts, no external assets, no upload,
   no telemetry, and no network calls.
+- Allow local relative links between generated reports so non-experts can move
+  from the operator page to the dashboard and JSON summaries.
 - Load only session manifests and existing JSON summaries in the public demo.
 - Treat real private evidence as external to this repository.
 
 ## Intended Flow
 
-1. Start locally with `RUN_LOCAL_OPERATOR.cmd` or `python scripts/local_operator.py`.
-2. Read the short operator explanation.
+1. Start locally with `OPEN_LOCAL_OPERATOR.cmd`, `RUN_LOCAL_OPERATOR.cmd`, or
+   `python scripts/local_operator.py`.
+2. Read the short operator explanation and click the local dashboard link.
 3. Confirm the synthetic session and release checks are ready.
 4. Open `demo/out/dashboard.html` for readiness, blockers, handoff, and priority.
 5. Share only generated no-claim summaries with reviewers.
@@ -27,7 +30,10 @@ or submission generator.
 ## Future Work
 
 - Improve the operator start page with clearer blocked-state guidance.
+- Keep `OPEN_LOCAL_OPERATOR.cmd` as the noob path until a packaged app exists.
 - Add a local workspace selector that accepts only session manifests.
+- Add a real one-window workflow later only after local-link navigation is
+  stable and audited.
 - Add explicit output-folder summaries for generated reports.
 - Add a private-side adapter later, outside the public demo path, for internal
   review sessions that already produce sanitized JSON summaries.

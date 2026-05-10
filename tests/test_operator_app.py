@@ -31,10 +31,14 @@ class OperatorAppTests(unittest.TestCase):
             self.assertIn("no upload", html)
             self.assertIn("no OCR", html)
             self.assertIn("manifest guided", html)
+            self.assertIn('href="dashboard.html"', html)
+            self.assertIn('href="local_operator.json"', html)
+            self.assertIn('href="release_check.json"', html)
+            self.assertIn("this page is static", html)
             self.assertNotIn("<script", html.lower())
             self.assertNotIn("http://", html.lower())
             self.assertNotIn("https://", html.lower())
-            self.assertNotIn("href=", html.lower())
+            self.assertNotIn("upload endpoint", html.lower())
 
     def test_operator_app_blocks_when_session_or_dashboard_is_not_ready(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

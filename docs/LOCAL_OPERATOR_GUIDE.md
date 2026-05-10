@@ -6,21 +6,29 @@ model artifacts, and candidate-specific material outside this public repo.
 
 ## Safe Entry Points
 
-1. On Windows, double-click `RUN_LOCAL_OPERATOR.cmd`.
+1. On Windows, double-click `OPEN_LOCAL_OPERATOR.cmd` to run the checks and
+   open the generated operator page.
 2. Or run:
 
 ```bash
 python scripts/local_operator.py
 ```
 
-3. After the command passes, open:
+3. If you used the Python command or `RUN_LOCAL_OPERATOR.cmd`, open:
 
 ```text
 demo/out/operator.html
 ```
 
+Use `RUN_LOCAL_OPERATOR.cmd` instead of `OPEN_LOCAL_OPERATOR.cmd` when you want
+the command to print paths without opening a browser.
+
 The operator page explains the local steps, safety boundary, current session,
 and where to find the detailed dashboard.
+
+The page is static. It includes local links to generated reports, but changing
+inputs does not update the browser by itself. Rerun `RUN_LOCAL_OPERATOR.cmd` or
+`python scripts/local_operator.py`, then refresh `demo/out/operator.html`.
 
 The lower-level dashboard entry point remains available:
 
@@ -38,7 +46,8 @@ demo/out/dashboard.html
 ```
 
 The dashboard is a static local file. It has no JavaScript, no server, no
-telemetry, no external assets, and no network flow.
+telemetry, no external assets, and no network flow. The operator page follows
+the same rule; its links point only to generated local files.
 
 ## Troubleshooting
 

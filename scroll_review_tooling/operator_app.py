@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from html import escape
+import os
 from pathlib import Path
 from typing import Any
 
@@ -28,6 +29,10 @@ def _safe_relative(path: Path, root: Path) -> str:
         return path.relative_to(root).as_posix()
     except ValueError:
         return path.as_posix()
+
+
+def _relative_href(target: Path, base_file: Path) -> str:
+    return Path(os.path.relpath(target, base_file.parent)).as_posix()
 
 
 def render_operator_app(
@@ -62,6 +67,9 @@ def render_operator_app(
         release_check_decision=release_payload.get("decision"),
         dashboard_decision=dashboard_payload.get("decision"),
         dashboard_html=_safe_relative(dashboard_html, repo_root),
+        dashboard_href=_relative_href(dashboard_html, out_html),
+        release_check_href=_relative_href(repo_root / "demo/out/release_check.json", out_html),
+        operator_status_href=_relative_href(out_json, out_html),
         operator_html=_safe_relative(out_html, repo_root),
         allowed_data_flow="session-json-only",
         local_only=True,
@@ -75,10 +83,10 @@ def render_operator_app(
 def _operator_html(payload: dict[str, Any]) -> str:
     status_class = "ok" if payload.get("status_ok") else "bad"
     rows = [
-        ("1", "Start demo or session", "Use the synthetic demo session or a local session manifest that references existing JSON summaries only."),
-        ("2", "Run checks", "Validate manifests, release safety, leak scan, and dashboard readiness before review handoff."),
-        ("3", "Open dashboard", f"Review status, blockers, readiness, and priority in {_display(payload.get('dashboard_html'))}."),
-        ("4", "Share report", "Share only generated no-claim summaries with reviewers; keep real private material outside this public repository."),
+        ("1", "Run the launcher", "Double-click RUN_LOCAL_OPERATOR.cmd or run python scripts/local_operator.py. Rerun it after changing any session JSON."),
+        ("2", "Open this page", "Use this page as the plain-language starting point. It is generated locally and does not run in the browser."),
+        ("3", "Open the dashboard", f"Review status, blockers, readiness, and priority in {_display(payload.get('dashboard_html'))}."),
+        ("4", "Share summaries only", "Share generated no-claim summaries with reviewers; keep real private material outside this public repository."),
     ]
     lines = [
         "<!doctype html>",
@@ -100,6 +108,9 @@ def _operator_html(payload: dict[str, Any]) -> str:
         "    .value { font-size: 18px; font-weight: 650; overflow-wrap: anywhere; }",
         "    .ok { color: var(--ok); } .bad { color: var(--bad); }",
         "    .badge { display: inline-block; border: 1px solid #88c4a2; color: var(--ok); border-radius: 999px; padding: 7px 10px; margin: 3px 5px 3px 0; font-size: 13px; font-weight: 650; background: #ffffff; }",
+        "    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 6px; }",
+        "    .action { display: inline-block; border: 1px solid #8ab6f0; background: #ffffff; color: var(--accent); border-radius: 8px; padding: 10px 12px; font-weight: 650; text-decoration: none; }",
+        "    .note { border-left: 4px solid var(--accent); background: #ffffff; padding: 12px 14px; margin: 18px 0; }",
         "    table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }",
         "    th, td { padding: 11px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-size: 14px; }",
         "    th { background: #edf2f7; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0; }",
@@ -111,6 +122,7 @@ def _operator_html(payload: dict[str, Any]) -> str:
         "<main>",
         "  <h1>Scroll Review Local Operator</h1>",
         "  <p>This is a local guide surface for review readiness. It does not read scroll material, run OCR, run transcription, run inference, upload data, or authorize public or prize claims.</p>",
+        "  <p class=\"note\">Current control model: this page is static. Use the launcher to regenerate outputs, then open the local files below. Browser clicks only navigate between generated local reports.</p>",
         '  <div aria-label="Safety badges">',
         '    <span class="badge">local only</span>',
         '    <span class="badge">no upload</span>',
@@ -118,6 +130,11 @@ def _operator_html(payload: dict[str, Any]) -> str:
         '    <span class="badge">no reading-result claim</span>',
         '    <span class="badge">manifest guided</span>',
         "  </div>",
+        '  <nav class="actions" aria-label="Local report links">',
+        f'    <a class="action" href="{_html(payload.get("dashboard_href"))}">Open detailed dashboard</a>',
+        f'    <a class="action" href="{_html(payload.get("operator_status_href"))}">Open operator status JSON</a>',
+        f'    <a class="action" href="{_html(payload.get("release_check_href"))}">Open release check JSON</a>',
+        "  </nav>",
         '  <section class="grid" aria-label="Summary">',
         f'    <div class="card"><div class="label">Decision</div><div class="value">{_html(payload.get("decision"))}</div></div>',
         f'    <div class="card"><div class="label">Status OK</div><div class="value {status_class}">{_html(payload.get("status_ok"))}</div></div>',

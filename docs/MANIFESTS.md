@@ -369,6 +369,24 @@ On Windows, `RUN_LOCAL_DASHBOARD.cmd` is a thin double-click wrapper around the
 same command. It does not launch a browser, start a server, or contact the
 network.
 
+## Local Operator Output
+
+Use `scripts/local_operator.py` to generate the no-claim operator start page:
+
+```bash
+python scripts/local_operator.py
+```
+
+On Windows, `RUN_LOCAL_OPERATOR.cmd` is the thin double-click wrapper. The
+command writes `demo/out/operator.html`, `demo/out/local_operator.json`, and the
+usual dashboard outputs. The operator page is static: it links only to generated
+local files such as `dashboard.html`, `local_operator.json`, and
+`release_check.json`. It does not run checks from the browser.
+
+The JSON output uses `local-operator-app-v1` and keeps the standard no-claim
+fields: `status_ok`, `readiness_stage`, `readiness_blockers`, `claim_status`,
+`public_claim_allowed`, and `target_inference_allowed`.
+
 ## Release Check Output
 
 Use `python scripts/check_release.py --out-json demo/out/release_check.json --out-md demo/out/release_check.md`

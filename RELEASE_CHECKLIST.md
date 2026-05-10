@@ -4,9 +4,12 @@ Use this checklist before pushing or sharing a release candidate.
 
 - Run `git status --short --branch` and review every tracked and untracked path.
 - Run `python scripts/local_operator.py`.
+- Run `cmd /c RUN_LOCAL_OPERATOR.cmd`.
 - Run `python scripts/local_dashboard.py`.
 - Run `python scripts/local_dashboard.py --session demo/session_manifest.json`.
 - Run `python -m scroll_review_tooling.review_workflow dashboard --session demo/session_manifest.json`.
+- Confirm `OPEN_LOCAL_OPERATOR.cmd` only calls `RUN_LOCAL_OPERATOR.cmd`, opens
+  `demo\out\operator.html`, and contains no network URL.
 - Confirm `RUN_LOCAL_OPERATOR.cmd` only wraps `python scripts\local_operator.py` and does not open a browser or contact the network.
 - Confirm `RUN_LOCAL_DASHBOARD.cmd` only wraps `python scripts\local_dashboard.py` and does not open a browser or contact the network.
 - Run `python scripts/run_demo.py`.

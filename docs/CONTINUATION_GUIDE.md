@@ -6,6 +6,8 @@ This file is for future chats or agents continuing the public
 ## Current Baseline
 
 - `master` includes the v0.6 local dashboard toolkit.
+- `codex/v0.7-operator-flow` adds the static operator page and local
+  one-click launcher line.
 - Package version: `0.6.0`.
 - Core scope: public-safe no-claim review readiness, synthetic demo manifests,
   local dashboard, release audit, leak scan, and generated reports.
@@ -28,6 +30,8 @@ Then inspect:
 - `docs/LOCAL_OPERATOR_GUIDE.md`
 - `docs/MANIFESTS.md`
 - `docs/OPERATOR_APP_ROADMAP.md`
+- `OPEN_LOCAL_OPERATOR.cmd`
+- `RUN_LOCAL_OPERATOR.cmd`
 - `scripts/local_dashboard.py`
 - `scripts/local_operator.py`
 - `scroll_review_tooling/reports.py`
@@ -45,6 +49,8 @@ Then inspect:
   `target_inference_allowed: false`.
 - Keep local operator surfaces self-contained: no scripts, no external assets,
   no network calls, and no upload path.
+- Local relative links between generated files are allowed; external links are
+  not allowed in generated operator/dashboard HTML.
 
 ## Recommended Branches
 

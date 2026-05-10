@@ -33,9 +33,16 @@ A new user can start with the local operator page:
 python scripts/local_operator.py
 ```
 
-On Windows, double-click `RUN_LOCAL_OPERATOR.cmd`. It writes
+On Windows, double-click `OPEN_LOCAL_OPERATOR.cmd` for the closest current
+one-click flow: it runs the local checks and opens the generated operator page.
+If you prefer a launcher that does not open a browser, use
+`RUN_LOCAL_OPERATOR.cmd`. It writes
 `demo/out/operator.html`, a plain-language start page, and
 `demo/out/dashboard.html`, the detailed status board.
+
+The current operator page is static. It has local links to generated reports,
+but it does not run checks from inside the browser. If a session file or JSON
+summary changes, rerun the command and refresh the page.
 
 The lower-level dashboard command remains available:
 
@@ -79,7 +86,8 @@ elsewhere.
 - Prioritizes existing readiness and handoff JSONs into a deterministic
   no-claim next-step queue.
 - Renders a local operator start page that explains the safe steps before a
-  reviewer opens the detailed dashboard.
+  reviewer opens the detailed dashboard. The page links only to generated local
+  files.
 - Renders a local static HTML dashboard from existing JSON outputs so a reviewer
   can inspect status, blockers, and priority without reading raw JSON.
 - Runs a release audit for repository scope, secrets, heavyweight
@@ -124,8 +132,12 @@ Run the local operator entry point first:
 python scripts/local_operator.py
 ```
 
-On Windows, double-click `RUN_LOCAL_OPERATOR.cmd`. It runs the same safe local
-checks and writes `demo/out/operator.html` plus `demo/out/dashboard.html`.
+On Windows, double-click `OPEN_LOCAL_OPERATOR.cmd` to run the same safe local
+checks and open `demo/out/operator.html`. Use `RUN_LOCAL_OPERATOR.cmd` when you
+want the command to print paths without opening a browser.
+Open `demo/out/operator.html` first. It explains the current status and links
+to the generated dashboard and JSON summaries. It is a static local page, not a
+browser app that runs checks itself.
 
 For the lower-level dashboard flow:
 

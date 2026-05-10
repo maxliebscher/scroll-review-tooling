@@ -28,6 +28,16 @@ class LauncherTests(unittest.TestCase):
         self.assertNotIn("start ", text.lower())
         self.assertNotIn("powershell", text.lower())
 
+    def test_windows_open_operator_launcher_only_opens_local_file(self) -> None:
+        repo = Path(__file__).resolve().parents[1]
+        launcher = repo / "OPEN_LOCAL_OPERATOR.cmd"
+        text = launcher.read_text(encoding="utf-8")
+        self.assertIn("call RUN_LOCAL_OPERATOR.cmd", text)
+        self.assertIn('start "" "demo\\out\\operator.html"', text)
+        self.assertNotIn("http://", text.lower())
+        self.assertNotIn("https://", text.lower())
+        self.assertNotIn("powershell", text.lower())
+
 
 if __name__ == "__main__":
     unittest.main()
