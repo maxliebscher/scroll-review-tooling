@@ -1,0 +1,31 @@
+{
+  "review_pack_protocol_version": "review-pack-v1",
+  "surface_review_protocol_version": "surface-vc3d-review-v1",
+  "review_type": "surface_vc3d",
+  "scroll_id": "synthetic-scroll",
+  "segment_id": "synthetic-segment",
+  "coordinate_frame": "synthetic-tifxyz",
+  "scale_source": "synthetic fixture",
+  "source_control_split": {
+    "source": ["surface-demo-source"],
+    "controls": ["surface-demo-control"]
+  },
+  "training_overlap_statement": "Synthetic fixture only; no model training.",
+  "render_command": "python scripts/run_demo.py",
+  "claim_safety": "Synthetic surface review manifest only; no OCR, no transcription, no reading, no public claim.",
+  "surface_metrics": {
+    "tifxyz_continuity": "present",
+    "valid_coverage": 0.98,
+    "neighbor_jump_p95": 1.2,
+    "layer_triplet_stability": "stable"
+  },
+  "surface_review_fields": {
+    "sheet_switch_visible": false,
+    "layer_continuity_blocker": false,
+    "boundary_or_crop_bias": false,
+    "compressed_region_risk": false,
+    "needs_vc3d_surface_review": false
+  },
+  "public_claim_allowed": false,
+  "target_inference_allowed": false
+}

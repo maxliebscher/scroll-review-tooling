@@ -1,0 +1,21 @@
+{
+  "preflight_protocol_version": "full-volume-preflight-v1",
+  "volume_id": "synthetic-volume",
+  "chunk_source": "synthetic fixture",
+  "data_metadata": {
+    "format": "synthetic-zarr"
+  },
+  "coordinate_frame": "synthetic-volume-xyz",
+  "model_hash": "sha256:synthetic-model-hash",
+  "protocol_hash": "sha256:synthetic-protocol-hash",
+  "control_panel": ["synthetic-control-01"],
+  "budget": {
+    "disk_mib": 64
+  },
+  "output_path_policy": {
+    "allowlist": ["demo/out"]
+  },
+  "stop_rules": ["preflight-only"],
+  "claim_safety": "No OCR, no transcription, no reading, no public claim.",
+  "execute": true
+}

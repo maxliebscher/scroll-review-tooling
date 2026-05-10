@@ -1,7 +1,7 @@
 [project]
 name = "scroll-review-tooling"
-version = "0.1.0"
-description = "Synthetic blind-first review-gate tooling"
+version = "0.6.0"
+description = "Local no-claim review-readiness tooling"
 requires-python = ">=3.10"
 readme = "README.md"
 license = {file = "LICENSE"}

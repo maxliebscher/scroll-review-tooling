@@ -2,11 +2,16 @@ from __future__ import annotations
 
 import argparse
 import csv
-import hashlib
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from .common import load_json, sha256_text, write_json
+from .manifest_validation import validate_handoff_manifest, validate_pack, validate_preflight_manifest, validate_surface_review
+from .reports import inspect_outputs, make_dossier, prioritize_outputs, render_dashboard
+from .sessions import session_input_paths, session_output_path, validate_session_manifest
 
 PROTOCOL_VERSION = "blind-review-v1"
 VALID_FINAL_VERDICTS = {
@@ -15,15 +20,6 @@ VALID_FINAL_VERDICTS = {
     "reject-artifact-risk",
     "insufficient-material",
 }
-
-
-def load_json(path: Path) -> dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8-sig"))
-
-
-def write_json(path: Path, data: Any) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=True) + "\n", encoding="utf-8", newline="\n")
 
 
 def write_tsv(path: Path, rows: list[dict[str, Any]]) -> None:
@@ -37,11 +33,6 @@ def write_tsv(path: Path, rows: list[dict[str, Any]]) -> None:
             if isinstance(flat.get("protocol_violations"), list):
                 flat["protocol_violations"] = ";".join(flat["protocol_violations"])
             writer.writerow(flat)
-
-
-def sha256_text(value: Any) -> str:
-    text = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def make_template(bundle: dict[str, Any]) -> dict[str, Any]:
@@ -106,10 +97,17 @@ def validate_response(path: Path, template: dict[str, Any]) -> dict[str, Any]:
         if acks.get(key) is not True:
             violations.append(f"missing-ack:{key}")
     expected_ids = {r.get("blind_id") for r in template.get("blind_review_scores", [])}
-    scored_ids = {r.get("blind_id") for r in data.get("blind_review_scores", [])}
+    scored_rows = data.get("blind_review_scores", [])
+    scored_id_list = [r.get("blind_id") for r in scored_rows]
+    scored_ids = set(scored_id_list)
     if scored_ids != expected_ids:
         violations.append("blind-id-set-mismatch")
-    for row in data.get("blind_review_scores", []):
+    if len(scored_id_list) != len(expected_ids):
+        violations.append("blind-id-count-mismatch")
+    duplicate_ids = sorted({blind_id for blind_id in scored_id_list if scored_id_list.count(blind_id) > 1})
+    for blind_id in duplicate_ids:
+        violations.append(f"duplicate-blind-id:{blind_id}")
+    for row in scored_rows:
         for key, low, high in [
             ("surface_quality_1_to_5", 1, 5),
             ("artifact_risk_1_to_5", 1, 5),
@@ -254,6 +252,42 @@ def main() -> None:
     p_attention.add_argument("--state", required=True)
     p_attention.add_argument("--out-json", required=True)
     p_attention.add_argument("--update-baseline", action="store_true")
+    p_pack = sub.add_parser("validate-pack")
+    p_pack.add_argument("--manifest", required=True)
+    p_pack.add_argument("--out-json", required=True)
+    p_pack.add_argument("--out-md")
+    p_surface = sub.add_parser("surface-review")
+    p_surface.add_argument("--manifest", required=True)
+    p_surface.add_argument("--out-json", required=True)
+    p_surface.add_argument("--out-md")
+    p_preflight = sub.add_parser("preflight-manifest")
+    p_preflight.add_argument("--manifest", required=True)
+    p_preflight.add_argument("--out-json", required=True)
+    p_preflight.add_argument("--out-md")
+    p_handoff = sub.add_parser("handoff")
+    p_handoff.add_argument("--manifest", required=True)
+    p_handoff.add_argument("--out-json", required=True)
+    p_handoff.add_argument("--out-md")
+    p_dossier = sub.add_parser("dossier")
+    p_dossier.add_argument("--bundle", required=True)
+    p_dossier.add_argument("--review-status", required=True)
+    p_dossier.add_argument("--second-check", required=True)
+    p_dossier.add_argument("--release-audit", required=True)
+    p_dossier.add_argument("--out-json", required=True)
+    p_dossier.add_argument("--out-md")
+    p_inspect = sub.add_parser("inspect")
+    p_inspect.add_argument("--input-json", nargs="+", required=True)
+    p_inspect.add_argument("--out-json", required=True)
+    p_inspect.add_argument("--out-md")
+    p_inspect.add_argument("--require-status-ok", action="store_true")
+    p_prioritize = sub.add_parser("prioritize")
+    p_prioritize.add_argument("--input-json", nargs="+", required=True)
+    p_prioritize.add_argument("--out-json", required=True)
+    p_prioritize.add_argument("--out-md")
+    p_dashboard = sub.add_parser("dashboard")
+    p_dashboard.add_argument("--input-json", nargs="+")
+    p_dashboard.add_argument("--out-html")
+    p_dashboard.add_argument("--session")
     args = parser.parse_args()
     if args.cmd == "init-template":
         payload = make_template(load_json(Path(args.bundle)))
@@ -265,6 +299,54 @@ def main() -> None:
         print(json.dumps(second_check(Path(args.review_status), Path(args.out_json)), indent=2))
     elif args.cmd == "attention":
         print(json.dumps(attention_delta(Path(args.second_check), Path(args.state), Path(args.out_json), args.update_baseline), indent=2))
+    elif args.cmd == "validate-pack":
+        print(json.dumps(validate_pack(Path(args.manifest), Path(args.out_json), Path(args.out_md) if args.out_md else None), indent=2))
+    elif args.cmd == "surface-review":
+        print(json.dumps(validate_surface_review(Path(args.manifest), Path(args.out_json), Path(args.out_md) if args.out_md else None), indent=2))
+    elif args.cmd == "preflight-manifest":
+        print(json.dumps(validate_preflight_manifest(Path(args.manifest), Path(args.out_json), Path(args.out_md) if args.out_md else None), indent=2))
+    elif args.cmd == "handoff":
+        print(json.dumps(validate_handoff_manifest(Path(args.manifest), Path(args.out_json), Path(args.out_md) if args.out_md else None), indent=2))
+    elif args.cmd == "dossier":
+        print(json.dumps(make_dossier(Path(args.bundle), Path(args.review_status), Path(args.second_check), Path(args.release_audit), Path(args.out_json), Path(args.out_md) if args.out_md else None), indent=2))
+    elif args.cmd == "inspect":
+        payload = inspect_outputs(
+            [Path(path) for path in args.input_json],
+            Path(args.out_json),
+            Path(args.out_md) if args.out_md else None,
+            require_status_ok=args.require_status_ok,
+        )
+        print(json.dumps(payload, indent=2))
+        if args.require_status_ok and not payload.get("status_ok"):
+            sys.exit(1)
+    elif args.cmd == "prioritize":
+        payload = prioritize_outputs(
+            [Path(path) for path in args.input_json],
+            Path(args.out_json),
+            Path(args.out_md) if args.out_md else None,
+        )
+        print(json.dumps(payload, indent=2))
+    elif args.cmd == "dashboard":
+        if args.session:
+            session = validate_session_manifest(Path(args.session))
+            if not session.get("status_ok"):
+                print(json.dumps(session, indent=2))
+                sys.exit(1)
+            input_paths = session_input_paths(session)
+            out_html = Path(args.out_html) if args.out_html else session_output_path(session)
+            session_name = str(session.get("session_name") or "")
+        else:
+            if not args.input_json or not args.out_html:
+                parser.error("dashboard requires --session or both --input-json and --out-html")
+            input_paths = [Path(path) for path in args.input_json]
+            out_html = Path(args.out_html)
+            session_name = None
+        payload = render_dashboard(
+            input_paths,
+            out_html,
+            session_name=session_name,
+        )
+        print(json.dumps(payload, indent=2))
 
 
 if __name__ == "__main__":

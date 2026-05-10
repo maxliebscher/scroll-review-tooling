@@ -15,5 +15,5 @@
       "path": "demo/images/D03.jpg"
     }
   ],
-  "claim_safety": "Synthetic fixture only; no OCR, no reading, no claim."
+  "claim_safety": "Synthetic fixture only; no OCR, no transcription, no reading, no public claim."
 }

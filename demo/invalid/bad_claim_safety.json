@@ -1,0 +1,15 @@
+{
+  "review_pack_protocol_version": "review-pack-v1",
+  "review_type": "blind_signal",
+  "scroll_id": "synthetic-scroll",
+  "segment_id": "synthetic-segment",
+  "coordinate_frame": "synthetic-local-pixels",
+  "scale_um_per_px": 7.9,
+  "source_control_split": {
+    "source": ["D01"],
+    "controls": ["D02"]
+  },
+  "training_overlap_statement": "Synthetic fixture only.",
+  "render_command": "python scripts/run_demo.py",
+  "claim_safety": "Synthetic fixture only."
+}

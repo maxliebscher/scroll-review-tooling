@@ -1,0 +1,24 @@
+{
+  "handoff_protocol_version": "review-to-reading-handoff-v1",
+  "source_readiness_files": [
+    "demo/out/review_pack_status.json",
+    "demo/out/surface_review_status.json",
+    "demo/out/full_volume_preflight_status.json",
+    "demo/out/dossier.json"
+  ],
+  "next_private_step_type": "vc3d-sheet-switch-review",
+  "surface_risk_summary": {
+    "surface_ready": true,
+    "sheet_switch_risk": false,
+    "compressed_region_risk": false
+  },
+  "control_requirements": {
+    "controls_present": false,
+    "control_count": 0
+  },
+  "reviewer_requirements": {
+    "required_review_count": 1,
+    "reviewer_summary": "Synthetic invalid fixture."
+  },
+  "claim_safety": "Synthetic handoff only; no OCR, no transcription, no reading, no public claim."
+}

@@ -1,0 +1,17 @@
+{
+  "session_protocol_version": "local-review-session-v1",
+  "session_name": "Synthetic local dashboard session",
+  "dashboard_inputs": [
+    "demo/out/review_pack_status.json",
+    "demo/out/surface_review_status.json",
+    "demo/out/full_volume_preflight_status.json",
+    "demo/out/dossier.json",
+    "demo/out/handoff_status.json",
+    "demo/out/inspect_gate.json",
+    "demo/out/path_priority.json"
+  ],
+  "dashboard_output": "demo/out/dashboard.html",
+  "claim_safety": "Synthetic local dashboard session only; no OCR, no transcription, no reading, no public claim.",
+  "public_claim_allowed": false,
+  "target_inference_allowed": false
+}

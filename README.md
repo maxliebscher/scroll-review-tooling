@@ -5,11 +5,49 @@ assessment. It validates reviewer responses, records second-check
 decisions, and emits attention signals only when a controlled next step
 is supported.
 
+Its unique public role is review readiness: it helps teams decide whether a
+candidate path is controlled, reviewable, reproducible, and claim-safe enough
+for a separate private next step. It does not identify content, read source
+material, or create new evidence.
+
 The runnable demo fixture is intentionally synthetic and data-free.
 A review repository may also include real example outputs under
 `docs/examples/` so reviewers can see the workflow in context. Those
 examples are illustrative artifacts only: no OCR, no transcription, no
 reading, and no public or prize claim.
+
+Current release-candidate line: `v0.6.0`. See `CHANGELOG.md` for the public-safe
+change summary and `docs/LOCAL_OPERATOR_GUIDE.md` for the local dashboard flow.
+
+## ELI5: How It Works
+
+Think of this tool as a careful checklist and status board for scroll-review
+work. It does not look at a scroll and tell you what it says. Instead, it looks
+at small JSON summary files that already exist and asks: is this review package
+complete, controlled, safe to discuss, and ready for the next private step?
+
+A new user usually starts with one command:
+
+```bash
+python scripts/local_dashboard.py
+```
+
+That command runs the synthetic demo checks, validates the manifests, runs the
+release audit, and writes a local dashboard to `demo/out/dashboard.html`. On
+Windows, double-clicking `RUN_LOCAL_DASHBOARD.cmd` runs the same local flow.
+
+The dashboard then shows the important bits in plain language:
+
+- whether the current bundle passed the no-claim safety checks;
+- which readiness stage it reached, such as `surface-ready`,
+  `preflight-ready`, `review-ready`, or `handoff-ready`;
+- which blockers still need human attention;
+- which controlled private next step is suggested by the existing summaries.
+
+So the tool is not a reading machine. It is the local operator layer around the
+reading work: it helps a team avoid messy handoffs, missing controls, unsafe
+claims, and wasted review effort before private research work continues
+elsewhere.
 
 ## What It Does
 
@@ -17,6 +55,20 @@ reading, and no public or prize claim.
 - Validates reviewer responses against required acknowledgements and
   score ranges.
 - Separates ambiguous review outcomes from controlled-next-step support.
+- Validates public-safe review-pack, surface/VC3D, and full-volume
+  preflight manifests without running inference.
+- Emits no-claim review dossiers from existing workflow outputs.
+- Inspects existing JSON outputs into a compact no-claim readiness summary.
+- Rolls existing outputs into a public-safe evidence readiness ladder:
+  `manifest-valid`, `surface-ready`, `preflight-ready`, `review-ready`, and
+  `release-ready`.
+- Validates review-to-reading handoff manifests for controlled private next
+  steps such as surface continuity review, VC3D sheet-switch review, model
+  evaluation, high-resolution rescan priority, or private review.
+- Prioritizes existing readiness and handoff JSONs into a deterministic
+  no-claim next-step queue.
+- Renders a local static HTML dashboard from existing JSON outputs so a reviewer
+  can inspect status, blockers, and priority without reading raw JSON.
 - Runs a release audit for repository scope, secrets, heavyweight
   artifacts, and generated outputs.
 
@@ -53,14 +105,69 @@ it is shared as a user-facing app.
 
 ## Demo
 
+Run the canonical local release gate first:
+
+```bash
+python scripts/local_dashboard.py
+```
+
+On Windows, you can also double-click `RUN_LOCAL_DASHBOARD.cmd`. It runs the
+same local command and then prints the dashboard path.
+
+It runs the demo, strict inspect gate, unit tests, release audit, and internal
+leak scan, writes `demo/out/release_check.json`, and confirms the local
+dashboard exists. By default it uses `demo/session_manifest.json`, a synthetic
+session file that lists the JSON summaries to show in the dashboard. If a check
+fails, the command exits non-zero after writing the release summary.
+
+After it passes, open `demo/out/dashboard.html` locally. The dashboard is a
+static file generated from existing JSON outputs. It has no server, no upload,
+no telemetry, no external assets, and no candidate-data import path.
+
+For automation, the lower-level release gate remains available:
+
+```bash
+python scripts/check_release.py --out-json demo/out/release_check.json --out-md demo/out/release_check.md
+```
+
+Release-check summaries use the same no-claim safety fields as the manifest
+validators. Each check row includes a stable `check_id`, and the summary itself
+is versioned as `release-check-v1`.
+
+Session-based dashboard rendering is also available directly:
+
+```bash
+python -m scroll_review_tooling.review_workflow dashboard --session demo/session_manifest.json
+```
+
+Individual workflow commands remain available for debugging or demos:
+
 ```bash
 python -m scroll_review_tooling.review_workflow init-template --bundle demo/bundle_manifest.json --out demo/inbox/response_template.json
 python -m scroll_review_tooling.review_workflow validate --template demo/inbox/response_template.json --inbox demo/inbox --out-json demo/out/review_status.json --out-tsv demo/out/review_status.tsv
 python -m scroll_review_tooling.review_workflow second-check --review-status demo/out/review_status.json --out-json demo/out/second_check.json
 python -m scroll_review_tooling.review_workflow attention --second-check demo/out/second_check.json --state demo/out/attention_state.json --out-json demo/out/attention.json
 python -m scroll_review_tooling.release_audit --root . --out-json demo/out/release_audit.json
+python -m scroll_review_tooling.review_workflow validate-pack --manifest demo/review_pack_manifest.json --out-json demo/out/review_pack_status.json --out-md demo/out/review_pack_status.md
+python -m scroll_review_tooling.review_workflow surface-review --manifest demo/surface_review_manifest.json --out-json demo/out/surface_review_status.json --out-md demo/out/surface_review_status.md
+python -m scroll_review_tooling.review_workflow preflight-manifest --manifest demo/full_volume_preflight_manifest.json --out-json demo/out/full_volume_preflight_status.json --out-md demo/out/full_volume_preflight_status.md
+python -m scroll_review_tooling.review_workflow dossier --bundle demo/bundle_manifest.json --review-status demo/out/review_status.json --second-check demo/out/second_check.json --release-audit demo/out/release_audit.json --out-json demo/out/dossier.json --out-md demo/out/dossier.md
+python -m scroll_review_tooling.review_workflow handoff --manifest demo/handoff_manifest.json --out-json demo/out/handoff_status.json --out-md demo/out/handoff_status.md
+python -m scroll_review_tooling.review_workflow inspect --input-json demo/out/review_status.json demo/out/review_pack_status.json demo/out/surface_review_status.json demo/out/full_volume_preflight_status.json demo/out/dossier.json --out-json demo/out/inspect_summary.json --out-md demo/out/inspect_summary.md
+python -m scroll_review_tooling.review_workflow prioritize --input-json demo/out/handoff_status.json demo/out/dossier.json --out-json demo/out/path_priority.json --out-md demo/out/path_priority.md
+python -m scroll_review_tooling.review_workflow dashboard --input-json demo/out/review_pack_status.json demo/out/surface_review_status.json demo/out/full_volume_preflight_status.json demo/out/dossier.json demo/out/handoff_status.json demo/out/inspect_gate.json demo/out/path_priority.json --out-html demo/out/dashboard.html
 python -m unittest discover -s tests
 ```
+
+For release gating, `inspect` can require every inspected JSON file with an
+explicit `status_ok` field to be ready:
+
+```bash
+python -m scroll_review_tooling.review_workflow inspect --input-json demo/out/review_pack_status.json demo/out/surface_review_status.json demo/out/full_volume_preflight_status.json demo/out/dossier.json --out-json demo/out/inspect_gate.json --out-md demo/out/inspect_gate.md --require-status-ok
+```
+
+This mode only summarizes existing outputs. It does not run inference or create
+new evidence.
 
 Or run the same workflow with:
 
@@ -80,7 +187,7 @@ scale, 3D position, reproducibility, and separate claim-safety approval.
 
 ## Repository Scope
 
-This repository is suitable for private review of the tooling pattern.
+This repository is suitable for reviewing the tooling pattern.
 It is not the full research workspace and intentionally excludes
 research data, private notes, collaboration exports, local caches,
 models, and generated candidate outputs.
@@ -96,11 +203,11 @@ models, and generated candidate outputs.
 <!-- REAL_OUTPUT_EXAMPLES_START -->
 ## Real Output Examples
 
-The images below are real local review artifacts from the candidate
-pipeline. They show what a human reviewer would inspect: blind CT
-sheets, control/model references, decision synthesis, and preflight
-render context. They are not OCR, not a transcription, not a reading,
-and not a public claim.
+The images below are real review-gate example artifacts. They show the
+shape of materials a human reviewer might inspect: blind CT sheets,
+control/model references, decision synthesis, and preflight render
+context. They are not OCR, not a transcription, not a reading, and not a
+public claim.
 
 The overview flow uses cropped excerpts so that the content remains
 legible in GitHub's README view. The full review sheets are embedded
@@ -124,5 +231,3 @@ underneath.
 
 ![Preflight render example](docs/examples/real_preflight_render_example.jpg)
 <!-- REAL_OUTPUT_EXAMPLES_END -->
-
-

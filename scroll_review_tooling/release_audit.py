@@ -21,21 +21,54 @@ FORBIDDEN_TEXT_PATTERNS = [
     re.compile(r"C:\\Users\\", re.I),
     re.compile(r"data[/\\]discord_exports", re.I),
     re.compile(r"DiscordChatExporter", re.I),
+    re.compile(r"PROJECT_AUDIT", re.I),
+    re.compile(r"private\s+Discord\s+export", re.I),
+    re.compile(r"Sources\s+checked\s*:", re.I),
+    re.compile(r"Prize-Relevant\s+Hypothesis", re.I),
+    re.compile(r"Most\s+Useful\s+Next\s+Work", re.I),
+    re.compile(r"\bcf-[a-f0-9]{12,}\b", re.I),
+    re.compile(r"public_claim_allowed[\"']?\s*[:=]\s*true", re.I),
+    re.compile(r"target_inference_allowed[\"']?\s*[:=]\s*true", re.I),
+    re.compile(r"\b(ink\s+found|title\s+found|letters?\s+found|reading\s+claim)\b", re.I),
     re.compile(r"(?i)\b(api[_-]?key|secret|token|authorization|bearer)\b\s*[:=]"),
     re.compile(r"(?i)\bghp_[A-Za-z0-9_]{20,}\b"),
     re.compile(r"(?i)\bsk-[A-Za-z0-9_-]{20,}\b"),
 ]
+FORBIDDEN_FILE_PATTERNS = [
+    re.compile(r"(^|/)PROJECT_AUDIT[^/]*\.md$", re.I),
+    re.compile(r"(^|/)project-audit[^/]*\.md$", re.I),
+]
 REQUIRED_FILES = {
     "README.md",
+    "RUN_LOCAL_DASHBOARD.cmd",
+    "CHANGELOG.md",
     "LICENSE",
     "SECURITY.md",
     "PRIVACY.md",
     "RELEASE_CHECKLIST.md",
     "pyproject.toml",
     ".github/workflows/test.yml",
+    "demo/handoff_manifest.json",
+    "demo/session_manifest.json",
+    "docs/LOCAL_OPERATOR_GUIDE.md",
+    "docs/MANIFESTS.md",
+    "scripts/check_release.py",
+    "scripts/local_dashboard.py",
+    "scroll_review_tooling/common.py",
+    "scroll_review_tooling/manifest_validation.py",
+    "scroll_review_tooling/reports.py",
     "scroll_review_tooling/review_workflow.py",
     "scroll_review_tooling/release_audit.py",
+    "scroll_review_tooling/sessions.py",
+    "tests/test_check_release.py",
+    "tests/test_dashboard.py",
+    "tests/test_local_dashboard.py",
+    "tests/test_launcher.py",
+    "tests/test_output_contracts.py",
+    "tests/test_public_docs.py",
+    "tests/test_release_audit.py",
     "tests/test_review_workflow.py",
+    "tests/test_sessions.py",
 }
 TEXT_SCAN_EXEMPT_FILES = {
     "scroll_review_tooling/release_audit.py",
@@ -69,6 +102,8 @@ def audit(root: Path) -> dict[str, Any]:
     for path in files:
         rel = path.relative_to(root).as_posix()
         lower = rel.lower()
+        if any(pattern.search(rel) for pattern in FORBIDDEN_FILE_PATTERNS):
+            findings.append({"severity": "blocker", "path": rel, "reason": "forbidden-strategic-audit-file"})
         if any(part in lower for part in FORBIDDEN_PATH_PARTS):
             findings.append({"severity": "blocker", "path": rel, "reason": "forbidden-path"})
         if path.suffix.lower() in FORBIDDEN_SUFFIXES:
