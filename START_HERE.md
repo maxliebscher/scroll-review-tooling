@@ -12,8 +12,8 @@ Double-click:
 START_HERE.cmd
 ```
 
-It checks the local setup, builds the static operator page, and opens
-`demo/out/operator.html`.
+It checks the local setup and starts the local app at `127.0.0.1`. In the app,
+click **Check setup**, **Build dashboard**, and the report buttons.
 
 For automated local checks that should not open a browser window:
 
@@ -32,14 +32,20 @@ demo/out/local_operator.json
 ## Python
 
 ```bash
-python scripts/operator_doctor.py
-python scripts/local_operator.py
+python scripts/operator_server.py
 ```
 
-Then open:
+Then open, if your browser does not open automatically:
 
 ```text
-demo/out/operator.html
+http://127.0.0.1:8765/
+```
+
+For report-only operation:
+
+```bash
+python scripts/operator_doctor.py
+python scripts/local_operator.py
 ```
 
 ## What To Share

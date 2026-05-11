@@ -371,6 +371,17 @@ network.
 
 ## Local Operator Output
 
+Use the interactive local app for normal operation:
+
+```bash
+python scripts/operator_server.py
+```
+
+On Windows, `START_HERE.cmd` and `RUN_LOCAL_APP.cmd` start the same app on
+`127.0.0.1`. The app exposes only allowlisted actions: setup check, dashboard
+generation, and opening generated reports. It does not provide an upload path,
+raw evidence browser, OCR, transcription, inference, or claim workflow.
+
 Use the setup doctor first when a non-expert is trying the tool on a new
 machine:
 

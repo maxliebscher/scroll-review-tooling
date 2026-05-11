@@ -97,6 +97,7 @@ def build_release_check_payload() -> dict[str, object]:
     for row in [
         run("demo", "demo", ["scripts/run_demo.py"]),
         run("operator-doctor", "operator-doctor", ["scripts/operator_doctor.py"]),
+        run("operator-server", "operator-server", ["scripts/operator_server.py", "--once"]),
         run(
             "inspect-release-gate",
             "inspect-release-gate",

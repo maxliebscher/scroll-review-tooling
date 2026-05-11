@@ -12,9 +12,11 @@ This file is for future chats or agents continuing the public
   list over the same no-claim JSON contracts.
 - v0.9 usability work adds `START_HERE.cmd` and `START_HERE.md` as the
   beginner-facing local entry point.
-- Package version: `0.6.0`.
+- v1.0 local app work adds `RUN_LOCAL_APP.cmd` and `scripts/operator_server.py`
+  for interactive `127.0.0.1` operation.
+- Package version: `1.0.0`.
 - Core scope: public-safe no-claim review readiness, synthetic demo manifests,
-  local dashboard, release audit, leak scan, and generated reports.
+  local app, dashboard, release audit, leak scan, and generated reports.
 - Current next line: local operator usability, not research inference.
 
 ## Start Here
@@ -25,6 +27,7 @@ Run these checks before editing:
 git status --short --branch
 python -m unittest discover -s tests
 python scripts/operator_doctor.py
+python scripts/operator_server.py --once
 python scripts/check_release.py --out-json demo/out/release_check.json --out-md demo/out/release_check.md
 python -m scroll_review_tooling.release_audit --root . --out-json demo/out/release_audit.json
 ```
@@ -40,13 +43,16 @@ Then inspect:
 - `START_HERE.cmd`
 - `START_HERE.md`
 - `RUN_LOCAL_OPERATOR.cmd`
+- `RUN_LOCAL_APP.cmd`
 - `START_REVIEW_SESSION.cmd`
 - `scripts/local_dashboard.py`
 - `scripts/local_operator.py`
+- `scripts/operator_server.py`
 - `scripts/operator_doctor.py`
 - `scroll_review_tooling/reports.py`
 - `scroll_review_tooling/operator_app.py`
 - `scroll_review_tooling/operator_doctor.py`
+- `scroll_review_tooling/operator_server.py`
 - `tests/test_output_contracts.py`
 
 ## Guardrails
@@ -58,8 +64,10 @@ Then inspect:
 - Keep demo data synthetic and generated outputs under `demo/out/`.
 - Keep public outputs no-claim with `public_claim_allowed: false` and
   `target_inference_allowed: false`.
-- Keep local operator surfaces self-contained: no scripts, no external assets,
-  no network calls, and no upload path.
+- Keep generated report surfaces self-contained: no external assets and no
+  upload path.
+- The interactive app may use inline browser controls and `127.0.0.1`, but not
+  external calls or user-selected raw evidence imports.
 - Local relative links between generated files are allowed; external links are
   not allowed in generated operator/dashboard HTML.
 
@@ -75,7 +83,8 @@ Then inspect:
 - Keep `demo/out/operator_doctor.html` as the first-stop setup report for
   normal local operators.
 - Keep `START_HERE.cmd` as the obvious Windows first click while it remains a
-  thin wrapper over the setup doctor and operator launcher.
+  thin wrapper over the setup doctor and local app launcher.
+- Keep the local app actions small: setup check, dashboard build, report open.
 - Keep `operator_tasks` stable so future UI layers can render the same flow.
 - Preserve `demo/out/operator_summary.md` as the short no-claim share handoff.
 - Keep `operator_guidance` current as blocked states become more specific.

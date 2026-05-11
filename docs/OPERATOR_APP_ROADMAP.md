@@ -10,15 +10,15 @@ or submission generator.
 ## Current Direction
 
 - Keep the CLI and JSON contracts as the stable core.
-- Start the noob path with `CHECK_LOCAL_SETUP.cmd` so the user gets a plain
-  setup report before trying to interpret dashboard output.
-- Keep `START_HERE.cmd` as the beginner-facing Windows entry point over the
-  setup doctor plus local operator.
-- Add a local operator start page for first-run explanation and step guidance.
+- Start the beginner path with `START_HERE.cmd` so the user gets a local app,
+  not only a generated report.
+- Keep `CHECK_LOCAL_SETUP.cmd` available as a plain setup report.
+- Keep generated reports as shareable outputs, not as the primary UI.
 - Add a local launcher path where users can drag JSON reviewer
   responses only.
-- Keep generated HTML self-contained: no scripts, no external assets, no upload,
-  no telemetry, and no network calls.
+- Keep generated reports self-contained. The app may use local inline controls
+  and `127.0.0.1` actions, but no upload, telemetry, external assets, or remote
+  calls.
 - Allow local relative links between generated reports so non-experts can move
   from the operator page to the dashboard and JSON summaries.
 - Load only session manifests and existing JSON summaries in the public demo.
@@ -27,14 +27,14 @@ or submission generator.
 ## Intended Flow
 
 1. On Windows, start with `START_HERE.cmd`.
-2. Check local setup directly with `CHECK_LOCAL_SETUP.cmd` or
+2. In the local app, click **Check setup** and **Build dashboard**.
+3. Open dashboard and share summary from the app buttons.
+4. Check local setup directly with `CHECK_LOCAL_SETUP.cmd` or
    `python scripts/operator_doctor.py`.
-3. Start locally with `OPEN_LOCAL_OPERATOR.cmd`, `RUN_LOCAL_OPERATOR.cmd`, or
+5. Use report-only mode with `OPEN_LOCAL_OPERATOR.cmd`, `RUN_LOCAL_OPERATOR.cmd`, or
    `python scripts/local_operator.py`.
-4. Optionally pass or drag in a local session manifest.
-5. Read the Guided Flow table and click the local dashboard link.
-6. Confirm the setup, synthetic session, release checks, and dashboard are ready.
-7. Open `demo/out/dashboard.html` for readiness, blockers, handoff, and priority.
+6. Optionally pass or drag in a local session manifest for report-only workflows.
+7. Confirm the setup, synthetic session, release checks, and dashboard are ready.
 8. Share `demo/out/operator_summary.md` and the dashboard when reviewers need
    status and next-step context.
 9. Use `START_REVIEW_SESSION.cmd` when a reviewer needs a fresh local session

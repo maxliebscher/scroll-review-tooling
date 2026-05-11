@@ -42,11 +42,11 @@ if errorlevel 1 (
 )
 
 echo.
-echo Step 2: building and opening the local operator page...
+echo Step 2: starting the local operator app...
 if defined NO_OPEN (
   call RUN_LOCAL_OPERATOR.cmd %START_ARGS%
 ) else (
-  call OPEN_LOCAL_OPERATOR.cmd %START_ARGS%
+  call RUN_LOCAL_APP.cmd %START_ARGS%
 )
 if errorlevel 1 (
   echo.
@@ -56,5 +56,9 @@ if errorlevel 1 (
 )
 
 echo.
-echo Done. Start with demo\out\operator.html, then open dashboard.html from that page.
+if defined NO_OPEN (
+  echo Done. Generated reports are in demo\out.
+) else (
+  echo Done. The local app runs on 127.0.0.1. Close this window to stop it.
+)
 if not defined NO_PAUSE pause

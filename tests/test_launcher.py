@@ -56,12 +56,21 @@ class LauncherTests(unittest.TestCase):
         launcher = repo / "START_HERE.cmd"
         text = launcher.read_text(encoding="utf-8")
         self.assertIn("call CHECK_LOCAL_SETUP.cmd /nopause %START_ARGS%", text)
-        self.assertIn("call OPEN_LOCAL_OPERATOR.cmd %START_ARGS%", text)
+        self.assertIn("call RUN_LOCAL_APP.cmd %START_ARGS%", text)
         self.assertIn("call RUN_LOCAL_OPERATOR.cmd %START_ARGS%", text)
         self.assertIn("/nopause", text)
         self.assertIn("/noopen", text)
         self.assertIn("demo\\out\\operator.html", text)
         self.assertNotIn("http://", text.lower())
+        self.assertNotIn("https://", text.lower())
+        self.assertNotIn("powershell", text.lower())
+
+    def test_windows_local_app_launcher_is_loopback_only(self) -> None:
+        repo = Path(__file__).resolve().parents[1]
+        launcher = repo / "RUN_LOCAL_APP.cmd"
+        text = launcher.read_text(encoding="utf-8")
+        self.assertIn("python scripts\\operator_server.py", text)
+        self.assertIn("127.0.0.1", text)
         self.assertNotIn("https://", text.lower())
         self.assertNotIn("powershell", text.lower())
 

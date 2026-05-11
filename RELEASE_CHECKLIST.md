@@ -6,6 +6,7 @@ Use this checklist before pushing or sharing a release candidate.
 - Run `python scripts/operator_doctor.py`.
 - Run `cmd /c CHECK_LOCAL_SETUP.cmd /nopause`.
 - Run `cmd /c START_HERE.cmd /nopause /noopen`.
+- Run `python scripts/operator_server.py --once`.
 - Run `python scripts/local_operator.py`.
 - Run `cmd /c RUN_LOCAL_OPERATOR.cmd`.
 - Run `python scripts/start_session.py --demo --session-dir demo/out/session_check`.
@@ -17,8 +18,11 @@ Use this checklist before pushing or sharing a release candidate.
   `demo\out\operator.html`, and contains no network URL.
 - Confirm `CHECK_LOCAL_SETUP.cmd` only wraps `python scripts\operator_doctor.py`
   and contains no network URL.
-- Confirm `START_HERE.cmd` only calls `CHECK_LOCAL_SETUP.cmd /nopause` and
-  `OPEN_LOCAL_OPERATOR.cmd`, and contains no network URL.
+- Confirm `START_HERE.cmd` only calls `CHECK_LOCAL_SETUP.cmd /nopause`,
+  `RUN_LOCAL_APP.cmd`, or `RUN_LOCAL_OPERATOR.cmd /noopen` fallback.
+- Confirm `RUN_LOCAL_APP.cmd` only wraps `python scripts\operator_server.py`.
+- Confirm `scripts/operator_server.py` binds to `127.0.0.1` and rejects any
+  other host.
 - Confirm `RUN_LOCAL_OPERATOR.cmd` only wraps `python scripts\local_operator.py` and does not open a browser or contact the network.
 - Confirm `START_REVIEW_SESSION.cmd` only wraps `python scripts\start_session.py --demo`, forwards local arguments, and contains no network URL.
 - Confirm `RUN_LOCAL_DASHBOARD.cmd` only wraps `python scripts\local_dashboard.py` and does not open a browser or contact the network.
@@ -39,7 +43,9 @@ Use this checklist before pushing or sharing a release candidate.
 - Confirm `demo/out/local_operator.json` contains `operator_tasks` and clear
   setup/session/release/dashboard/share statuses.
 - Confirm `demo/session_manifest.json` is synthetic and references only generated JSON summaries.
-- Confirm the dashboard and operator page contain no external URLs, scripts, upload behavior, or remote app behavior.
+- Confirm generated reports contain no external URLs or upload behavior.
+- Confirm the interactive local app uses only inline local controls and
+  `127.0.0.1` actions.
 - Confirm the runnable demo path contains only synthetic demo data.
 - Confirm manifest protocol versions are present in the synthetic demo files:
   `review-pack-v1`, `surface-vc3d-review-v1`, and

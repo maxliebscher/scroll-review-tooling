@@ -16,9 +16,9 @@ A review repository may also include real example outputs under
 examples are illustrative artifacts only: no OCR, no transcription, no
 reading, and no public or prize claim.
 
-Current release-candidate line: `v0.6.0`. See `CHANGELOG.md` for the public-safe
-change summary, `docs/LOCAL_OPERATOR_GUIDE.md` for the local dashboard flow,
-and `docs/OPERATOR_APP_ROADMAP.md` for the noob-friendly local operator line.
+Current release-candidate line: `v1.0 local operator`. See `CHANGELOG.md` for
+the public-safe change summary, `docs/LOCAL_OPERATOR_GUIDE.md` for the local
+app flow, and `docs/OPERATOR_APP_ROADMAP.md` for the operator roadmap.
 
 ## ELI5: How It Works
 
@@ -33,8 +33,15 @@ A new Windows user can start with the clearest current entry point:
 START_HERE.cmd
 ```
 
-It checks the setup, builds the local operator page, and opens
-`demo/out/operator.html`.
+It checks the setup and opens the local app at `127.0.0.1`. From there you can
+click buttons to check setup, build the dashboard, and open the generated
+reports.
+
+Python users can start the same app with:
+
+```bash
+python scripts/operator_server.py
+```
 
 You can also check whether the local setup is usable directly:
 
@@ -47,20 +54,16 @@ On Windows, double-click `CHECK_LOCAL_SETUP.cmd`. It writes
 the required local files, the session manifest, and the generated-output folder
 are ready.
 
-Then start the local operator page:
+The older report-only entry point remains available:
 
 ```bash
 python scripts/local_operator.py
 ```
 
-On Windows, double-click `OPEN_LOCAL_OPERATOR.cmd` if you want to skip the
-separate setup screen and go straight to the generated operator page.
-If you prefer a launcher that does not open a browser, use
-`RUN_LOCAL_OPERATOR.cmd`. It writes
-`demo/out/operator.html`, a plain-language start page, and
-`demo/out/dashboard.html`, the detailed status board. It also writes
-`demo/out/operator_summary.md`, a short no-claim share summary for reviewers or
-maintainers.
+On Windows, `OPEN_LOCAL_OPERATOR.cmd` builds and opens the report-only page.
+Use `RUN_LOCAL_OPERATOR.cmd` when you want the command to print paths without
+opening a browser. Both write `demo/out/operator.html`, `demo/out/dashboard.html`,
+and `demo/out/operator_summary.md`.
 
 You can pass a local session manifest to either Windows launcher, or drag a
 session manifest onto it:
@@ -80,9 +83,8 @@ You may drag JSON reviewer responses onto it. The starter writes an ignored
 status, attention status, and `session_summary.md`. It accepts JSON review
 responses only; it is not a raw-data importer.
 
-The current operator page is static. It has local links to generated reports,
-but it does not run checks from inside the browser. If a session file or JSON
-summary changes, rerun the command and refresh the page.
+The local app is the interactive surface. The generated operator page and
+dashboard are still static reports, useful for sharing or archiving.
 
 The lower-level dashboard command remains available:
 
@@ -127,6 +129,8 @@ elsewhere.
   no-claim next-step queue.
 - Checks the local setup with an operator doctor so non-experts can see whether
   Python, required files, output permissions, and session validation are ready.
+- Runs a local interactive app on `127.0.0.1` with buttons for setup, dashboard
+  generation, and opening generated reports.
 - Renders a local operator start page that explains the safe steps before a
   reviewer opens the detailed dashboard. The page links only to generated local
   files.
@@ -160,23 +164,30 @@ second-check workflow around that bundle.
 
 ## Interface
 
-This release candidate is CLI-first. It does not include the internal
-Scroll Autopilot GUI used during local exploration. That GUI controls
-many project-specific pipelines and still contains internal workflow
-assumptions, so it should be scrubbed and redesigned separately before
-it is shared as a user-facing app.
+The recommended interface is the local operator app. It runs only on
+`127.0.0.1`, uses the existing CLI as its engine, and exposes a small set of
+safe actions: check setup, build dashboard, and open generated reports. The CLI
+remains the automation and test surface.
 
 ## Demo
 
-Run the local setup doctor first if this is a new machine:
+For the interactive local app:
+
+```bash
+python scripts/operator_server.py
+```
+
+On Windows, double-click `START_HERE.cmd` or `RUN_LOCAL_APP.cmd`.
+
+For report-only operation, run the local setup doctor first if this is a new
+machine:
 
 ```bash
 python scripts/operator_doctor.py
 ```
 
-On Windows, double-click `START_HERE.cmd` for the full local start flow, or
-`CHECK_LOCAL_SETUP.cmd` if you only want the setup report. Then run the operator
-entry point:
+On Windows, double-click `CHECK_LOCAL_SETUP.cmd` if you only want the setup
+report. Then run the report-only operator entry point:
 
 ```bash
 python scripts/local_operator.py
@@ -186,8 +197,7 @@ On Windows, double-click `OPEN_LOCAL_OPERATOR.cmd` to run the same safe local
 checks and open `demo/out/operator.html`. Use `RUN_LOCAL_OPERATOR.cmd` when you
 want the command to print paths without opening a browser.
 Open `demo/out/operator.html` first. It explains the current status and links
-to the generated dashboard, JSON summaries, and share summary. It is a static
-local page, not a browser app that runs checks itself.
+to the generated dashboard, JSON summaries, and share summary.
 
 To use a different local session manifest:
 
@@ -217,8 +227,8 @@ session file that lists the JSON summaries to show in the dashboard. If a check
 fails, the command exits non-zero after writing the release summary.
 
 After it passes, open `demo/out/dashboard.html` locally. The dashboard is a
-static file generated from existing JSON outputs. It has no server, no upload,
-no telemetry, no external assets, and no candidate-data import path.
+static file generated from existing JSON outputs. It has no upload, no
+telemetry, no external assets, and no candidate-data import path.
 
 For automation, the lower-level release gate remains available:
 

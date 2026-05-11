@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.0.0 Local Interactive Operator
+
+- Added `RUN_LOCAL_APP.cmd` and `python scripts/operator_server.py` as a local
+  interactive operator on `127.0.0.1`.
+- Added buttons for setup check, dashboard generation, and opening generated
+  reports from one screen.
+- Kept report files as shareable outputs while moving day-to-day use into the
+  local app.
+- Kept the same no-claim boundary: no OCR, no transcription, no reading, no
+  inference, no upload, and no public or prize claim.
+
 ## v0.8.0 Local Operator Usability
 
 - Added `START_HERE.cmd` and `START_HERE.md` as the beginner-facing local
