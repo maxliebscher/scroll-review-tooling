@@ -243,6 +243,7 @@ def render_doctor_html(payload: dict[str, Any]) -> str:
         [
             "    </tbody>",
             "  </table>",
+            "  <p><strong>No OCR, no transcription, no reading, no public or prize claim.</strong></p>",
             "  <p>Keep private evidence, raw scans, model artifacts, collaboration exports, and reading attempts outside this public repository.</p>",
             "</main>",
             "</body>",

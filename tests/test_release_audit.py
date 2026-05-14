@@ -37,8 +37,11 @@ class ReleaseAuditTests(unittest.TestCase):
             "scripts/local_operator.py",
             "scripts/operator_server.py",
             "scripts/operator_doctor.py",
+            "scripts/operator_flow_check.py",
+            "scripts/package_check.py",
             "scripts/start_session.py",
             "scroll_review_tooling/common.py",
+            "scroll_review_tooling/data_sources.py",
             "scroll_review_tooling/manifest_validation.py",
             "scroll_review_tooling/operator_app.py",
             "scroll_review_tooling/operator_doctor.py",
@@ -49,11 +52,14 @@ class ReleaseAuditTests(unittest.TestCase):
             "scroll_review_tooling/sessions.py",
             "tests/test_check_release.py",
             "tests/test_dashboard.py",
+            "tests/test_data_sources.py",
             "tests/test_local_dashboard.py",
             "tests/test_launcher.py",
             "tests/test_operator_app.py",
             "tests/test_operator_doctor.py",
+            "tests/test_operator_flow_check.py",
             "tests/test_operator_server.py",
+            "tests/test_package_check.py",
             "tests/test_output_contracts.py",
             "tests/test_public_docs.py",
             "tests/test_release_audit.py",
@@ -119,6 +125,41 @@ class ReleaseAuditTests(unittest.TestCase):
                     result = audit(root)
                     self.assertEqual(result["decision"], "release-audit-blocked")
                     self.assertIn(rel, {f["path"] for f in result["findings"]})
+
+    def test_blocks_raw_scan_and_model_suffixes(self) -> None:
+        for rel in [
+            "data/public/sample.zarr",
+            "data/public/sample.tiff",
+            "data/public/sample.npy",
+            "models/checkpoint.pt",
+            "models/checkpoint.safetensors",
+        ]:
+            with self.subTest(rel=rel):
+                with tempfile.TemporaryDirectory() as tmp:
+                    root = Path(tmp)
+                    self.build_minimal_repo(root)
+                    path = root / rel
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text("raw placeholder\n", encoding="utf-8")
+                    result = audit(root)
+                    self.assertEqual(result["decision"], "release-audit-blocked")
+                    self.assertIn("forbidden-heavy-or-raw-suffix", {f["reason"] for f in result["findings"]})
+
+    def test_blocks_credentials_and_tokens(self) -> None:
+        blocked_texts = [
+            "api" + "_key = abc123",
+            "to" + "ken: abc123",
+            "author" + "ization = Bearer local",
+        ]
+        for text in blocked_texts:
+            with self.subTest(text=text):
+                with tempfile.TemporaryDirectory() as tmp:
+                    root = Path(tmp)
+                    self.build_minimal_repo(root)
+                    (root / "README.md").write_text(text + "\n", encoding="utf-8")
+                    result = audit(root)
+                    self.assertEqual(result["decision"], "release-audit-blocked")
+                    self.assertIn("forbidden-private-or-secret-pattern", {f["reason"] for f in result["findings"]})
 
 
 if __name__ == "__main__":

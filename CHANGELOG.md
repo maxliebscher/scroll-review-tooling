@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- Added `python scripts/package_check.py` as a dry-run ZIP-readiness check. It
+  inspects tracked and unignored package candidates, blocks generated outputs,
+  raw scan suffixes, model/checkpoint files, and credential-like text, and does
+  not create an archive.
+- Clarified the desktop operator wording so advanced local data actions are
+  described as bounded small-chunk steps rather than a full-volume data flow.
+- Added explicit public-adapter readiness fields so source cards distinguish
+  built-in demo readiness, optional adapter setup, credential requirements,
+  fetch support, and full-volume blocking.
+
 ## v1.0.0 Local Interactive Operator
 
 - Added `RUN_LOCAL_APP.cmd` and `python scripts/operator_server.py` as a local

@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from .common import load_json, sha256_text, write_json
+from .data_sources import check_workspace, fetch_chunk, plan_chunk, scan_readiness, source_catalog
 from .manifest_validation import validate_handoff_manifest, validate_pack, validate_preflight_manifest, validate_surface_review
 from .reports import inspect_outputs, make_dossier, prioritize_outputs, render_dashboard
 from .sessions import session_input_paths, session_output_path, validate_session_manifest
@@ -288,6 +289,24 @@ def main() -> None:
     p_dashboard.add_argument("--input-json", nargs="+")
     p_dashboard.add_argument("--out-html")
     p_dashboard.add_argument("--session")
+    p_catalog = sub.add_parser("source-catalog")
+    p_catalog.add_argument("--out-json", required=True)
+    p_workspace = sub.add_parser("check-workspace")
+    p_workspace.add_argument("--workspace", required=True)
+    p_workspace.add_argument("--out-json", required=True)
+    p_plan = sub.add_parser("plan-chunk")
+    p_plan.add_argument("--source", required=True)
+    p_plan.add_argument("--scan", required=True)
+    p_plan.add_argument("--preset", default="tiny-preview")
+    p_plan.add_argument("--workspace", required=True)
+    p_plan.add_argument("--out-json", required=True)
+    p_fetch = sub.add_parser("fetch-chunk")
+    p_fetch.add_argument("--plan", required=True)
+    p_fetch.add_argument("--out-json", required=True)
+    p_scan = sub.add_parser("scan-readiness")
+    p_scan.add_argument("--fetch-status", required=True)
+    p_scan.add_argument("--out-json", required=True)
+    p_scan.add_argument("--out-md")
     args = parser.parse_args()
     if args.cmd == "init-template":
         payload = make_template(load_json(Path(args.bundle)))
@@ -347,6 +366,28 @@ def main() -> None:
             session_name=session_name,
         )
         print(json.dumps(payload, indent=2))
+    elif args.cmd == "source-catalog":
+        print(json.dumps(source_catalog(Path(args.out_json)), indent=2))
+    elif args.cmd == "check-workspace":
+        print(json.dumps(check_workspace(Path(args.workspace), Path.cwd(), Path(args.out_json)), indent=2))
+    elif args.cmd == "plan-chunk":
+        print(
+            json.dumps(
+                plan_chunk(
+                    args.source,
+                    args.scan,
+                    args.preset,
+                    Path(args.workspace),
+                    Path.cwd(),
+                    Path(args.out_json),
+                ),
+                indent=2,
+            )
+        )
+    elif args.cmd == "fetch-chunk":
+        print(json.dumps(fetch_chunk(Path(args.plan), Path(args.out_json), repo_root=Path.cwd()), indent=2))
+    elif args.cmd == "scan-readiness":
+        print(json.dumps(scan_readiness(Path(args.fetch_status), Path(args.out_json), Path(args.out_md) if args.out_md else None), indent=2))
 
 
 if __name__ == "__main__":

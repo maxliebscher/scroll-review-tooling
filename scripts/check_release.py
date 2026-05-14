@@ -19,6 +19,18 @@ LEAK_SCAN_EXEMPT_FILES = {
     "tests/test_check_release.py",
     "tests/test_release_audit.py",
 }
+PACKAGE_FORBIDDEN_PREFIXES = ("demo/out/", "__pycache__/", ".pytest_cache/", ".git/")
+PACKAGE_FORBIDDEN_PARTS = ("/__pycache__/", "/.pytest_cache/", "/demo/out/", "/.git/")
+PACKAGE_FORBIDDEN_SUFFIXES = {".ckpt", ".pt", ".pth", ".safetensors", ".npy", ".tif", ".tiff", ".ppm", ".zarr"}
+PACKAGE_FORBIDDEN_TEXT = (
+    "api" + "_key",
+    "sec" + "ret=",
+    "sec" + "ret:",
+    "to" + "ken=",
+    "to" + "ken:",
+    "author" + "ization=",
+    "author" + "ization:",
+)
 
 
 def run(check_id: str, label: str, args: list[str]) -> dict[str, str]:
@@ -31,6 +43,62 @@ def run(check_id: str, label: str, args: list[str]) -> dict[str, str]:
             print(completed.stderr, file=sys.stderr, end="")
         return {"check_id": check_id, "label": label, "command": " ".join(args), "status": "failed", "returncode": str(completed.returncode)}
     return {"check_id": check_id, "label": label, "command": " ".join(args), "status": "ok", "returncode": "0"}
+
+
+def optional_operator_flow(enabled: bool) -> dict[str, str]:
+    if not enabled:
+        return {
+            "check_id": "operator-flow",
+            "label": "operator-flow",
+            "command": "scripts/operator_flow_check.py",
+            "status": "skipped",
+            "returncode": "0",
+        }
+    return run("operator-flow", "operator-flow", ["scripts/operator_flow_check.py", "--out-json", "demo/out/operator_flow_check.json"])
+
+
+def package_candidate_files(root: Path = ROOT) -> list[str]:
+    completed = subprocess.run(
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+        cwd=root,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if completed.returncode == 0:
+        return sorted(line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip())
+    files: list[str] = []
+    for path in root.rglob("*"):
+        if path.is_file():
+            files.append(path.relative_to(root).as_posix())
+    return sorted(files)
+
+
+def package_findings(root: Path = ROOT, candidates: list[str] | None = None) -> list[str]:
+    findings: list[str] = []
+    for rel in candidates if candidates is not None else package_candidate_files(root):
+        clean = rel.replace("\\", "/").lstrip("./")
+        lower = clean.lower()
+        wrapped = f"/{lower}"
+        if any(lower.startswith(prefix) for prefix in PACKAGE_FORBIDDEN_PREFIXES) or any(part in wrapped for part in PACKAGE_FORBIDDEN_PARTS):
+            findings.append(clean)
+            continue
+        if Path(lower).suffix in PACKAGE_FORBIDDEN_SUFFIXES:
+            findings.append(clean)
+            continue
+        path = root / clean
+        if path.is_file() and path.suffix.lower() in {".py", ".md", ".json", ".toml", ".txt", ".yml", ".yaml", ".cmd"} and path.stat().st_size < 1_000_000:
+            text = path.read_text(encoding="utf-8", errors="replace").lower()
+            if any(term in text for term in PACKAGE_FORBIDDEN_TEXT):
+                findings.append(clean)
+    return sorted(findings)
+
+
+def package_check(root: Path = ROOT, candidates: list[str] | None = None) -> dict[str, str]:
+    findings = package_findings(root, candidates)
+    if findings:
+        raise SystemExit(f"package-check-failed: {', '.join(findings)}")
+    return {"check_id": "package-check", "label": "package-check", "command": "git ls-files --cached --others --exclude-standard", "status": "ok", "returncode": "0"}
 
 
 def leak_scan(root: Path = ROOT) -> dict[str, str]:
@@ -50,9 +118,9 @@ def leak_scan(root: Path = ROOT) -> dict[str, str]:
 
 
 def release_check_payload(rows: list[dict[str, str]]) -> dict[str, object]:
-    decision = "release-check-pass" if all(row.get("status") == "ok" for row in rows) else "release-check-fail"
+    decision = "release-check-pass" if all(row.get("status") in {"ok", "skipped"} for row in rows) else "release-check-fail"
     status_ok = decision == "release-check-pass"
-    failed_check_ids = [row.get("check_id", "unknown") for row in rows if row.get("status") != "ok"]
+    failed_check_ids = [row.get("check_id", "unknown") for row in rows if row.get("status") not in {"ok", "skipped"}]
     return {
         "created": datetime.now(timezone.utc).isoformat(),
         "decision": decision,
@@ -92,12 +160,24 @@ def release_check_markdown(payload: dict[str, object]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def build_release_check_payload() -> dict[str, object]:
+def build_release_check_payload(*, include_operator_flow: bool = False) -> dict[str, object]:
     rows: list[dict[str, str]] = []
     for row in [
         run("demo", "demo", ["scripts/run_demo.py"]),
         run("operator-doctor", "operator-doctor", ["scripts/operator_doctor.py"]),
         run("operator-server", "operator-server", ["scripts/operator_server.py", "--once"]),
+        run(
+            "source-catalog",
+            "source-catalog",
+            [
+                "-m",
+                "scroll_review_tooling.review_workflow",
+                "source-catalog",
+                "--out-json",
+                "demo/out/source_catalog.json",
+            ],
+        ),
+        optional_operator_flow(include_operator_flow),
         run(
             "inspect-release-gate",
             "inspect-release-gate",
@@ -132,8 +212,13 @@ def build_release_check_payload() -> dict[str, object]:
         ),
     ]:
         rows.append(row)
-        if row.get("status") != "ok":
+        if row.get("status") not in {"ok", "skipped"}:
             return release_check_payload(rows)
+    try:
+        rows.append(package_check())
+    except SystemExit as exc:
+        rows.append({"check_id": "package-check", "label": "package-check", "command": "git ls-files --cached --others --exclude-standard", "status": "failed", "returncode": str(exc.code or 1)})
+        return release_check_payload(rows)
     try:
         rows.append(leak_scan())
     except SystemExit as exc:
@@ -156,8 +241,13 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--out-json")
     parser.add_argument("--out-md")
+    parser.add_argument(
+        "--include-operator-flow",
+        action="store_true",
+        help="Also run the local HTTP Operator flow check. This is slower on WSL / Windows mounts.",
+    )
     args = parser.parse_args()
-    payload = build_release_check_payload()
+    payload = build_release_check_payload(include_operator_flow=args.include_operator_flow)
     write_outputs(payload, args.out_json, args.out_md)
     print(json.dumps(payload, indent=2))
     if payload.get("decision") != "release-check-pass":

@@ -65,6 +65,7 @@ class OperatorDoctorTests(unittest.TestCase):
             html = render_doctor_html(payload)
             md = render_doctor_markdown(payload)
             self.assertIn("Scroll Review Setup Doctor", html)
+            self.assertIn("No OCR", html)
             self.assertIn("No OCR", md)
             self.assertNotIn("<script", html.lower())
             self.assertNotIn("http://", html.lower())

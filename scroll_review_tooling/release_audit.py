@@ -17,7 +17,7 @@ FORBIDDEN_PATH_PARTS = {
 }
 IGNORED_GENERATED_PATH_PARTS = {"__pycache__", ".pytest_cache", "demo/out", ".git"}
 IGNORED_GENERATED_PREFIXES = ("demo/out/", "sessions/")
-FORBIDDEN_SUFFIXES = {".ckpt", ".pt", ".pth", ".safetensors", ".npy", ".tif", ".ppm"}
+FORBIDDEN_SUFFIXES = {".ckpt", ".pt", ".pth", ".safetensors", ".npy", ".tif", ".tiff", ".ppm", ".zarr"}
 FORBIDDEN_TEXT_PATTERNS = [
     re.compile(r"C:\\Users\\", re.I),
     re.compile(r"data[/\\]discord_exports", re.I),
@@ -67,8 +67,11 @@ REQUIRED_FILES = {
     "scripts/local_operator.py",
     "scripts/operator_server.py",
     "scripts/operator_doctor.py",
+    "scripts/operator_flow_check.py",
+    "scripts/package_check.py",
     "scripts/start_session.py",
     "scroll_review_tooling/common.py",
+    "scroll_review_tooling/data_sources.py",
     "scroll_review_tooling/manifest_validation.py",
     "scroll_review_tooling/operator_doctor.py",
     "scroll_review_tooling/operator_server.py",
@@ -79,11 +82,14 @@ REQUIRED_FILES = {
     "scroll_review_tooling/sessions.py",
     "tests/test_check_release.py",
     "tests/test_dashboard.py",
+    "tests/test_data_sources.py",
     "tests/test_local_dashboard.py",
     "tests/test_launcher.py",
     "tests/test_operator_app.py",
     "tests/test_operator_doctor.py",
+    "tests/test_operator_flow_check.py",
     "tests/test_operator_server.py",
+    "tests/test_package_check.py",
     "tests/test_output_contracts.py",
     "tests/test_public_docs.py",
     "tests/test_release_audit.py",

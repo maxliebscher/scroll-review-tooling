@@ -33,9 +33,80 @@ A new Windows user can start with the clearest current entry point:
 START_HERE.cmd
 ```
 
-It checks the setup and opens the local app at `127.0.0.1`. From there you can
-click buttons to check setup, build the dashboard, and open the generated
-reports.
+This is the primary desktop/Windows path. It checks the setup and opens the local app at `127.0.0.1`. The main screen is
+now a seven-step wizard:
+
+```text
+Setup -> Workspace -> Choose data -> Limit chunk -> Save locally -> Create summary -> Review
+```
+
+The left side shows which step is ready, waiting, or blocked. The middle shows
+the active step and the next button to click. The right side explains blockers
+and lists generated output files. The intended beginner path is:
+**Use suggested workspace and check**, **Check public catalog**, **Create chunk
+plan**, **Save chunk locally**, **Create readiness summary**, then **Open review
+reports**.
+
+`START_HERE.cmd` also writes a small local start log to
+`demo/out/start_here.log`, checks that Python is available, and stops with a
+plain message if the default local app port is already in use.
+
+On a first run, the screen stays deliberately quiet: short explanation, active
+wizard step, one primary button, and the local/no-claim safety note. Generated
+report links, readiness meters, and the optional Queue/Kanban Operator board
+appear as supporting views after the flow has something useful to show. Manual
+step controls and the raw action log are folded into **Advanced step details**
+so a new user does not have to choose between debugging buttons.
+Use the **Info** button in the app for a short explanation of what the tool is
+for, how it works, and what it will not do. The app also includes a light/dark
+theme toggle and starts in dark violet mode by default. The public source
+repository link is kept as a small utility link, separate from the main workflow
+navigation.
+
+The newest Operator Studio flow also adds **Load public scan chunk**. This is a
+guided public-data path for small chunks only: accept the suggested local
+workspace outside this repo, check the public catalog, fetch a tiny public/demo
+chunk, and generate a no-claim readiness summary. Raw chunk files live in the
+workspace beside the repo; JSON/HTML/Markdown reports live under ignored
+`demo/out/`. It does not download full volumes, use private credentials, run
+OCR, infer letters, read text, or submit claims.
+
+The app explains that path as a **Data Journey** before asking you to choose
+anything:
+
+```mermaid
+flowchart LR
+    A[Public source] --> B[Catalog scan label]
+    B --> C[Small chunk preset]
+    C --> D[Local workspace]
+    D --> E[Readiness summary]
+    E --> F[Review report]
+```
+
+When you choose data, the UI explains why the source is available, what scan
+label is being used, why the preset is small, where raw bytes are stored, and
+what the app will not do. Use `tiny-preview` first to learn and test the flow,
+`small-review` for a bounded public review start, and `manual-bounds` only when
+bounds were already chosen by a separate controlled workflow.
+
+```mermaid
+flowchart TD
+    Goal[What am I trying to do?] --> Demo[Learn the workflow: tiny-preview]
+    Goal --> Review[Prepare a small public review chunk: small-review]
+    Goal --> Bounds[Use known coordinates: manual-bounds]
+    Demo --> Safe[Public-only, local-only, no claim]
+    Review --> Safe
+    Bounds --> Safe
+```
+
+The source picker shows public-only source cards with adapter status, suggested
+scan/preset, and maximum fetch size. If the optional adapter is not installed,
+the app keeps it visible as setup-needed and continues to offer the built-in
+public demo path. Source cards also show that credentials are not required,
+full-volume requests are blocked, and optional adapter-backed fetching is not a
+release-gate requirement.
+The individual step buttons stay available under **Advanced step details** for
+debugging when a blocker needs inspection.
 
 Python users can start the same app with:
 
@@ -129,8 +200,15 @@ elsewhere.
   no-claim next-step queue.
 - Checks the local setup with an operator doctor so non-experts can see whether
   Python, required files, output permissions, and session validation are ready.
-- Runs a local interactive app on `127.0.0.1` with buttons for setup, dashboard
-  generation, and opening generated reports.
+- Guides a public-only small scan-chunk workflow: public source catalog,
+  metadata-safe starting point, local workspace check, chunk plan, limited fetch,
+  checksum, and scan-data readiness summary.
+- Runs a local Operator Studio app on `127.0.0.1` with a first-run wizard,
+  active-step guidance, one primary next action, workspace input, a main-flow
+  public data selector, folded diagnostics, optional readiness meters,
+  traffic-light status, a priority queue, an optional Kanban board, an Info
+  panel, a dark-by-default light/dark theme toggle, a separated source-code
+  utility link, and generated-report links.
 - Renders a local operator start page that explains the safe steps before a
   reviewer opens the detailed dashboard. The page links only to generated local
   files.
@@ -166,8 +244,8 @@ second-check workflow around that bundle.
 
 The recommended interface is the local operator app. It runs only on
 `127.0.0.1`, uses the existing CLI as its engine, and exposes a small set of
-safe actions: check setup, build dashboard, and open generated reports. The CLI
-remains the automation and test surface.
+safe actions: check a session, build the demo dashboard, open generated reports, and review
+the local readiness queue. The CLI remains the automation and test surface.
 
 ## Demo
 
@@ -246,6 +324,19 @@ Session-based dashboard rendering is also available directly:
 python -m scroll_review_tooling.review_workflow dashboard --session demo/session_manifest.json
 ```
 
+Public scan-chunk workflow commands are available for the local data path:
+
+```bash
+python -m scroll_review_tooling.review_workflow source-catalog --out-json demo/out/source_catalog.json
+python -m scroll_review_tooling.review_workflow check-workspace --workspace C:\ScrollReviewData --out-json demo/out/local_data_workspace.json
+python -m scroll_review_tooling.review_workflow plan-chunk --source public-demo --scan synthetic-public-scroll --preset tiny-preview --workspace C:\ScrollReviewData --out-json demo/out/chunk_download_plan.json
+python -m scroll_review_tooling.review_workflow fetch-chunk --plan demo/out/chunk_download_plan.json --out-json demo/out/chunk_fetch_status.json
+python -m scroll_review_tooling.review_workflow scan-readiness --fetch-status demo/out/chunk_fetch_status.json --out-json demo/out/scan_data_readiness.json --out-md demo/out/scan_data_readiness.md
+```
+
+Choose your own local workspace folder. The app blocks folders inside the repo
+and writes raw chunk bytes only under that local workspace, not under `demo/out/`.
+
 Individual workflow commands remain available for debugging or demos:
 
 ```bash
@@ -290,6 +381,16 @@ public claim.
 This is a review-tooling package, not a research result. Any real
 ScrollPrize candidate still needs independent expert review, provenance,
 scale, 3D position, reproducibility, and separate claim-safety approval.
+
+For ZIP-style handoff preparation, run the dry-run package check:
+
+```bash
+python scripts/package_check.py --out-json demo/out/package_check.json
+```
+
+It checks that generated outputs, raw scan files, model/checkpoint files, and
+credential-like text are not part of the package candidate set. It does not
+create an archive.
 
 ## Repository Scope
 

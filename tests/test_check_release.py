@@ -4,7 +4,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.check_release import leak_scan, release_check_markdown, release_check_payload, write_outputs
+from scripts.check_release import (
+    leak_scan,
+    optional_operator_flow,
+    package_check,
+    release_check_markdown,
+    release_check_payload,
+    write_outputs,
+)
 
 
 class CheckReleaseTests(unittest.TestCase):
@@ -31,6 +38,18 @@ class CheckReleaseTests(unittest.TestCase):
         self.assertEqual(payload["readiness_stage"], "blocked")
         self.assertEqual(payload["readiness_blockers"], ["unit-tests"])
         self.assertEqual(payload["claim_status"], "no-claim")
+
+    def test_release_check_payload_allows_skipped_optional_flow(self) -> None:
+        payload = release_check_payload(
+            [
+                {"check_id": "unit-tests", "label": "unit-tests", "command": "test", "status": "ok", "returncode": "0"},
+                optional_operator_flow(False),
+            ]
+        )
+        self.assertEqual(payload["decision"], "release-check-pass")
+        self.assertTrue(payload["status_ok"])
+        self.assertEqual(payload["readiness_blockers"], [])
+        self.assertIn("operator-flow", {row["check_id"] for row in payload["checks"]})
 
     def test_release_check_markdown_is_claim_safe(self) -> None:
         payload = release_check_payload([{"check_id": "leak-scan", "label": "leak-scan", "command": "internal", "status": "ok", "returncode": "0"}])
@@ -69,6 +88,38 @@ class CheckReleaseTests(unittest.TestCase):
             (root / "README.md").write_text("private " + "Discord export\n", encoding="utf-8")
             with self.assertRaises(SystemExit):
                 leak_scan(root)
+
+    def test_package_check_blocks_generated_raw_model_and_secret_candidates(self) -> None:
+        blocked = [
+            "demo/out/dashboard.html",
+            "__pycache__/module.pyc",
+            "public/sample.zarr",
+            "public/sample.tiff",
+            "public/sample.npy",
+            "models/checkpoint.pt",
+            "models/checkpoint.safetensors",
+            "notes/secret.txt",
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for rel in blocked:
+                path = root / rel
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(("sec" + "ret: local\n") if rel == "notes/secret.txt" else "placeholder\n", encoding="utf-8")
+            with self.assertRaises(SystemExit):
+                package_check(root, blocked)
+
+    def test_package_check_allows_public_source_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            files = ["README.md", "START_HERE.cmd", "scroll_review_tooling/operator_server.py"]
+            for rel in files:
+                path = root / rel
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("public no-claim source\n", encoding="utf-8")
+            result = package_check(root, files)
+            self.assertEqual(result["check_id"], "package-check")
+            self.assertEqual(result["status"], "ok")
 
 
 if __name__ == "__main__":

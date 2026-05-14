@@ -423,6 +423,62 @@ dashboard/share task list for future UI shells, plus
 `operator_headline_status`, `operator_can_continue`, `operator_next_step`,
 `operator_next_command`, and `operator_shareable_outputs`.
 
+## Public Scan-Chunk Workflow
+
+Use the scan-chunk workflow when a local operator needs a small public data
+sample before creating readiness summaries. It is a data-management flow, not
+an evidence-reading flow.
+
+The workflow emits five protocol versions:
+
+- `data-source-catalog-v1`: public sources, scan labels, presets, adapter
+  readiness, metadata-safe recommended starting points, plain-language
+  operator goals, what the user gets, and limitations. Each source states
+  whether planning and fetching are enabled, whether credentials are required,
+  and whether full-volume requests are allowed.
+- `local-data-workspace-v1`: selected local workspace label, write test,
+  free-space check, and workspace blockers.
+- `chunk-download-plan-v1`: public source, scan label, small preset, bounds,
+  byte estimate, max fetch limit, and a dashboard-safe `selection_rationale`
+  explaining why that source, scan, and preset were chosen.
+- `chunk-fetch-status-v1`: fetched or blocked status, byte count, checksum, and
+  redacted workspace label.
+- `scan-data-readiness-v1`: no-claim review-readiness summary for the fetched
+  chunk, including a plain operator summary that says the chunk is local,
+  checksummed, public-only, and not read or inferred.
+
+The user-facing data journey is:
+
+```text
+Public source -> Catalog scan label -> Small chunk preset -> Local workspace -> Readiness summary -> Review report
+```
+
+Presets are intentionally plain:
+
+- `tiny-preview`: learn the workflow and prove storage/checksum/reporting.
+- `small-review`: bounded public readiness triage.
+- `manual-bounds`: only for bounds chosen by a separate controlled workflow.
+
+Example local CLI flow:
+
+```bash
+python -m scroll_review_tooling.review_workflow source-catalog --out-json demo/out/source_catalog.json
+python -m scroll_review_tooling.review_workflow check-workspace --workspace C:\ScrollReviewData --out-json demo/out/local_data_workspace.json
+python -m scroll_review_tooling.review_workflow plan-chunk --source public-demo --scan synthetic-public-scroll --preset tiny-preview --workspace C:\ScrollReviewData --out-json demo/out/chunk_download_plan.json
+python -m scroll_review_tooling.review_workflow fetch-chunk --plan demo/out/chunk_download_plan.json --out-json demo/out/chunk_fetch_status.json
+python -m scroll_review_tooling.review_workflow scan-readiness --fetch-status demo/out/chunk_fetch_status.json --out-json demo/out/scan_data_readiness.json --out-md demo/out/scan_data_readiness.md
+```
+
+The public demo source writes deterministic tiny bytes into the selected local
+workspace so operators can verify storage, permissions, checksums, and dashboard
+handoff. Optional public adapters may expose real public catalog metadata later,
+but the base app must remain runnable without them, and release gates must not
+require adapter-backed downloads.
+
+The workflow blocks private access profiles, full-volume presets, folders inside
+the repo, source files in `demo/out/`, OCR, transcription, inference, text
+reading, and public or prize claims.
+
 ## Local Review Session Output
 
 Use `scripts/start_session.py` to create an isolated local review-session
